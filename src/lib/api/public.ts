@@ -360,6 +360,13 @@ export interface TrendingSong {
   bestChartTerritory: string | null;
 }
 
+export interface ArtistAwardsSummary {
+  totalWins: number;
+  totalNominations: number;
+  grammyWins: number;
+  grammyNominations: number;
+}
+
 export interface PublicArtist {
   id: string;
   name: string;
@@ -384,6 +391,7 @@ export interface PublicArtist {
   records: ArtistRecord[];
   awards: ArtistAward[];
   topSongs: ArtistSong[];
+  awardsSummary: ArtistAwardsSummary;
 }
 
 export interface ArtistCertification {
