@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { getArtist, getArtists } from "@/lib/api/public";
+import { compareSuggestArtist } from "@/lib/api/public";
 import type { PublicArtist, BrowseArtist } from "@/lib/api/public";
 import { ArtistSearch } from "./artist-search";
 import { CompareArtistCard } from "./compare-artist-card";
@@ -36,7 +36,7 @@ export function CompareView() {
     else setRightLoading(true);
 
     try {
-      const full = await getArtist(slug);
+      const full = await compareSuggestArtist(slug);
       const browse: BrowseArtist = {
         id: full.id,
         name: full.name,
@@ -72,7 +72,7 @@ export function CompareView() {
     if (!artist.slug) return;
     setLeftLoading(true);
     try {
-      const full = await getArtist(artist.slug);
+      const full = await compareSuggestArtist(artist.slug);
       setLeftArtist(full);
       updateUrl(artist.slug, rightBrowse?.slug);
     } finally {
@@ -85,7 +85,7 @@ export function CompareView() {
     if (!artist.slug) return;
     setRightLoading(true);
     try {
-      const full = await getArtist(artist.slug);
+      const full = await compareSuggestArtist(artist.slug);
       setRightArtist(full);
       updateUrl(leftBrowse?.slug, artist.slug);
     } finally {

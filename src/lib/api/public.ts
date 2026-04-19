@@ -263,6 +263,10 @@ export function suggestArtists(params?: ArtistBrowseParams) {
   return publicFetch<ArtistBrowseResponse>(`/api/public/artists?${query}`);
 }
 
+export function compareSuggestArtist(slug: string) {
+  return publicFetch<PublicArtist>(`/api/public/artists/${slug}`);
+}
+
 // ── Types ─────────────────────────────────────────────────────────────────────
 export interface IndexableSong {
   slug: string;
