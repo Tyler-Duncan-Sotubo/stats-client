@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
-import { Search, X } from "lucide-react";
+import { Search, X, Loader2 } from "lucide-react";
 import { Input } from "@/shared/ui/input";
 import { suggestQuestions, type AskQuestion } from "@/lib/api/public";
 
@@ -24,6 +24,7 @@ export function AskBar({ defaultValue = "", className = "" }: AskBarProps) {
   const router = useRouter();
   const pathname = usePathname();
   const [query, setQuery] = useState(defaultValue);
+  const [loading, setLoading] = useState(false);
   const [suggestions, setSuggestions] = useState<AskQuestion[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [activeSuggestion, setActiveSuggestion] = useState(-1);
@@ -62,6 +63,7 @@ export function AskBar({ defaultValue = "", className = "" }: AskBarProps) {
     }
 
     debounceRef.current = setTimeout(async () => {
+      setLoading(true);
       try {
         const results = await suggestQuestions(q, 5);
         setSuggestions(results);
@@ -69,6 +71,8 @@ export function AskBar({ defaultValue = "", className = "" }: AskBarProps) {
         setActiveSuggestion(-1);
       } catch {
         setSuggestions([]);
+      } finally {
+        setLoading(false);
       }
     }, 300);
 
@@ -79,7 +83,7 @@ export function AskBar({ defaultValue = "", className = "" }: AskBarProps) {
 
   // close on outside click
   useEffect(() => {
-    function handleClickOutside(e: MouseEvent) {
+    function handleOutside(e: MouseEvent | TouchEvent) {
       if (
         containerRef.current &&
         !containerRef.current.contains(e.target as Node)
@@ -87,13 +91,19 @@ export function AskBar({ defaultValue = "", className = "" }: AskBarProps) {
         setShowSuggestions(false);
       }
     }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+
+    document.addEventListener("mousedown", handleOutside);
+    document.addEventListener("touchstart", handleOutside); // ← add for mobile
+    return () => {
+      document.removeEventListener("mousedown", handleOutside);
+      document.removeEventListener("touchstart", handleOutside); // ← cleanup
+    };
   }, []);
 
   function navigate(q: string) {
     setShowSuggestions(false);
     router.push(`/ask/${toSlug(q)}`);
+    setShowSuggestions(false); // ← add
   }
 
   function handleSubmit(e: React.FormEvent) {
@@ -101,6 +111,7 @@ export function AskBar({ defaultValue = "", className = "" }: AskBarProps) {
     const q = query.trim();
     if (!q) return;
     navigate(q);
+    setShowSuggestions(false); // ← add
   }
 
   function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
@@ -144,12 +155,18 @@ export function AskBar({ defaultValue = "", className = "" }: AskBarProps) {
               setShowSuggestions(true);
             }}
             onKeyDown={handleKeyDown}
+            onBlur={() => {
+              setTimeout(() => setShowSuggestions(false), 150);
+            }}
             onFocus={() => suggestions.length > 0 && setShowSuggestions(true)}
             placeholder="Ask anything about Afrobeats..."
             className="pl-9 pr-8 bg-white focus-visible:ring-1 h-10 text-base placeholder:text-xs lg:placeholder:text-base"
             autoComplete="off"
           />
-          {query && (
+          {loading && (
+            <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground animate-spin" />
+          )}
+          {!loading && query && (
             <button
               type="button"
               onClick={() => {
