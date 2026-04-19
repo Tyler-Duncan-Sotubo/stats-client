@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { User } from "lucide-react";
+import { GitCompare, User } from "lucide-react";
 import { Button } from "@/shared/ui/button";
 import { AskBar } from "./ask-bar";
 import { MobileNav } from "./mobile-nav";
@@ -22,8 +22,13 @@ export function Navbar({ charts }: { charts: AvailableChart[] }) {
       </div>
 
       {/* Right side */}
-      <div className="flex-1 flex justify-between items-center gap-4 px-3">
+      <div className="flex-1 flex items-center gap-2 px-3">
         <AskBar />
+        <Link href="/compare" className="md:hidden shrink-0">
+          <Button variant="ghost" size="icon" className="h-9 w-9">
+            <GitCompare className="w-4 h-4" />
+          </Button>
+        </Link>
       </div>
     </header>
   );
