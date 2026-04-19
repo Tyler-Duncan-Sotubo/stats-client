@@ -5,6 +5,7 @@ import { QueryProvider } from "@/lib/providers/query-provider";
 import { Toaster } from "sonner";
 import { Plus_Jakarta_Sans } from "next/font/google";
 import { ScrollToTop } from "@/shared/ui/scroll-to-top";
+import Script from "next/script";
 
 const plusJakarta = Plus_Jakarta_Sans({
   subsets: ["latin"],
@@ -34,6 +35,19 @@ export default function RootLayout({
         <NextAuthProvider>
           <QueryProvider>
             <ScrollToTop />
+            {/* Google Analytics */}
+            <Script
+              src="https://www.googletagmanager.com/gtag/js?id=G-Z657KN1HMV"
+              strategy="afterInteractive"
+            />
+            <Script id="google-analytics" strategy="afterInteractive">
+              {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-Z657KN1HMV');
+          `}
+            </Script>
             {children}
             <Toaster position="top-right" richColors />
           </QueryProvider>
