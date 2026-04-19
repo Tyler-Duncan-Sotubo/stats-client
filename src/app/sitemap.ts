@@ -1,27 +1,17 @@
 // app/sitemap.ts
 import type { MetadataRoute } from "next";
-import {
-  getIndexableQuestions,
-  getArtists,
-  getAvailableCharts,
-  getIndexableSongs,
-} from "@/lib/api/public";
+import { getIndexableQuestions, getAvailableCharts } from "@/lib/api/public";
 
 const BASE_URL = "https://tooxclusive.com/stats";
 
-export const revalidate = 3600; // regenerate every hour
+export const revalidate = 3600;
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const [questions, artists, charts, songs] = await Promise.allSettled([
+  const [questions, charts] = await Promise.allSettled([
     getIndexableQuestions(),
-    getArtists({ limit: 2000, sortBy: "totalStreams" }),
     getAvailableCharts(),
-    getIndexableSongs(), // ← add
   ]);
 
-  console.log(artists.status, charts.status, questions.status, songs.status); // ← add
-
-  // ── Static routes ──────────────────────────────────────────────────────────
   const staticRoutes: MetadataRoute.Sitemap = [
     {
       url: BASE_URL,
@@ -67,7 +57,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
   ];
 
-  // ── Ask questions ──────────────────────────────────────────────────────────
   const questionRoutes: MetadataRoute.Sitemap =
     questions.status === "fulfilled"
       ? questions.value.map((q) => ({
@@ -78,20 +67,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         }))
       : [];
 
-  // ── Artist profiles ────────────────────────────────────────────────────────
-  const artistRoutes: MetadataRoute.Sitemap =
-    artists.status === "fulfilled"
-      ? artists.value.data
-          .filter((a) => a.slug)
-          .map((a) => ({
-            url: `${BASE_URL}/artists/${a.slug}`,
-            lastModified: new Date(),
-            changeFrequency: "daily" as const,
-            priority: 0.8,
-          }))
-      : [];
-
-  // ── Chart pages ────────────────────────────────────────────────────────────
   const chartRoutes: MetadataRoute.Sitemap =
     charts.status === "fulfilled"
       ? charts.value.map((c) => ({
@@ -102,23 +77,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         }))
       : [];
 
-  const songRoutes: MetadataRoute.Sitemap =
-    songs.status === "fulfilled"
-      ? songs.value
-          .filter((s) => s.slug)
-          .map((s) => ({
-            url: `${BASE_URL}/songs/${s.slug}`,
-            lastModified: new Date(s.updatedAt),
-            changeFrequency: "daily" as const,
-            priority: 0.7,
-          }))
-      : [];
-
-  return [
-    ...staticRoutes,
-    ...artistRoutes,
-    ...songRoutes,
-    ...chartRoutes,
-    ...questionRoutes,
-  ];
+  // artists and songs removed — handled by paginated sitemaps
+  return [...staticRoutes, ...chartRoutes, ...questionRoutes];
 }

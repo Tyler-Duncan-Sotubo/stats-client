@@ -38,6 +38,25 @@ async function publicFetch<T>(path: string): Promise<T> {
   return res.json() as Promise<T>;
 }
 
+// Sitemap functions — used for generating sitemaps
+export async function getIndexableArtists(
+  limit: number,
+  offset: number,
+): Promise<{ slug: string; updatedAt: string }[]> {
+  return apiFetch<{ slug: string; updatedAt: string }[]>(
+    `/api/public/artists/indexable?limit=${limit}&offset=${offset}`,
+  );
+}
+
+export async function getIndexableSongs(
+  limit: number,
+  offset: number,
+): Promise<{ slug: string; updatedAt: string }[]> {
+  return apiFetch<{ slug: string; updatedAt: string }[]>(
+    `/api/public/songs/indexable?limit=${limit}&offset=${offset}`,
+  );
+}
+
 // ── Trending ──────────────────────────────────────────────────────────────────
 
 export function getTrendingArtists(params?: {
@@ -211,10 +230,6 @@ export function suggestQuestions(q: string, limit = 5) {
 
 export function getIndexableQuestions() {
   return apiFetch<IndexableQuestion[]>(`/api/public/ask/indexable`);
-}
-
-export function getIndexableSongs() {
-  return apiFetch<IndexableSong[]>(`/api/public/songs/indexable`);
 }
 
 // Embed-specific functions — cached heavily  ─────────────────────────────────────────────────────────────────────

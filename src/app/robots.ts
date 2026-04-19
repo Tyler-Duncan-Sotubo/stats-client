@@ -10,7 +10,10 @@ export default function robots(): MetadataRoute.Robots {
         disallow: ["/stats/api/", "/stats/_next/"],
       },
     ],
-    sitemap: "https://tooxclusive.com/sitemap.xml", // ← root domain
+    sitemap: [
+      "https://tooxclusive.com/stats/sitemap.xml",
+      "https://tooxclusive.com/stats/sitemap-index.xml",
+    ],
     host: "https://tooxclusive.com",
   };
 }
