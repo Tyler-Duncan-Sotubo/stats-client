@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { Search, X, Loader2 } from "lucide-react";
 import type { BrowseArtist } from "@/lib/api/public";
-import { getArtists } from "@/lib/api/public";
+import { suggestArtists } from "@/lib/api/public"; // ← swap import
 import { getCountryName } from "@/shared/utils/get-country-name";
 
 interface ArtistSearchProps {
@@ -40,7 +40,7 @@ export function ArtistSearch({
     debounceRef.current = setTimeout(async () => {
       setLoading(true);
       try {
-        const res = await getArtists({
+        const res = await suggestArtists({
           letter: query[0].toUpperCase(),
           limit: 100,
           sortBy: "totalStreams",

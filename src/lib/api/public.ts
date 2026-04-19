@@ -250,6 +250,19 @@ export function getTrendingArtistsCached(
   );
 }
 
+export function suggestArtists(params?: ArtistBrowseParams) {
+  const query = new URLSearchParams();
+  if (params?.limit) query.set("limit", String(params.limit));
+  if (params?.page) query.set("page", String(params.page));
+  if (params?.letter) query.set("letter", params.letter);
+  if (params?.country) query.set("country", params.country);
+  if (params?.isAfrobeats !== undefined)
+    query.set("isAfrobeats", String(params.isAfrobeats));
+  if (params?.sortBy) query.set("sortBy", params.sortBy);
+
+  return publicFetch<ArtistBrowseResponse>(`/api/public/artists?${query}`);
+}
+
 // ── Types ─────────────────────────────────────────────────────────────────────
 export interface IndexableSong {
   slug: string;
