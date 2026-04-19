@@ -4,7 +4,14 @@ import type { BrowseArtist } from "@/lib/api/public";
 import { formatNumber } from "@/shared/utils/format";
 import { getCountryName } from "@/shared/utils/get-country-name";
 
-export function ArtistCard({ artist }: { artist: BrowseArtist }) {
+// artist-card.tsx
+export function ArtistCard({
+  artist,
+  sortBy = "totalStreams",
+}: {
+  artist: BrowseArtist;
+  sortBy?: string;
+}) {
   return (
     <Link
       href={`/artists/${artist.slug}`}
@@ -41,8 +48,16 @@ export function ArtistCard({ artist }: { artist: BrowseArtist }) {
         </p>
       )}
 
-      {/* Streams */}
-      {artist.totalStreams ? (
+      {/* Stat — switches based on sortBy */}
+      {sortBy === "monthlyListeners" && artist.monthlyListeners ? (
+        <p className="text-xs font-semibold text-muted-foreground tabular-nums">
+          {formatNumber(artist.monthlyListeners)} listeners
+        </p>
+      ) : sortBy === "name" && artist.totalStreams ? (
+        <p className="text-xs font-semibold text-muted-foreground tabular-nums">
+          {formatNumber(artist.totalStreams)} streams
+        </p>
+      ) : artist.totalStreams ? (
         <p className="text-xs font-semibold text-muted-foreground tabular-nums">
           {formatNumber(artist.totalStreams)} streams
         </p>

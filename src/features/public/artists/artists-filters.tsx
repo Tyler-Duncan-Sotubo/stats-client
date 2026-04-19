@@ -42,6 +42,8 @@ export function ArtistsFilters({
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
+  const ALL_COUNTRIES = "__all__";
+
   function updateParam(key: string, value: string | undefined) {
     const params = new URLSearchParams(searchParams.toString());
     if (value) {
@@ -72,16 +74,17 @@ export function ArtistsFilters({
         </TabsList>
       </Tabs>
 
-      {/* Country */}
       <Select
-        value={currentCountry ?? ""}
-        onValueChange={(val) => updateParam("country", val || undefined)}
+        value={currentCountry ?? ALL_COUNTRIES}
+        onValueChange={(val) => {
+          updateParam("country", val === ALL_COUNTRIES ? undefined : val);
+        }}
       >
         <SelectTrigger className="rounded-xl border-border bg-muted/40 text-sm font-semibold h-9 w-40">
           <SelectValue placeholder="All Countries" />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="x">All Countries</SelectItem>
+          <SelectItem value={ALL_COUNTRIES}>All Countries</SelectItem>
           {COUNTRIES.map((c) => (
             <SelectItem key={c.value} value={c.value}>
               {c.label}
@@ -89,7 +92,6 @@ export function ArtistsFilters({
           ))}
         </SelectContent>
       </Select>
-
       {/* Clear */}
       {hasFilters && (
         <button

@@ -28,28 +28,30 @@ function LogoMark({ size = "md" }: { size?: LogoProps["size"] }) {
       style={{ width: dim, height: dim }}
       className="relative shrink-0 rounded-md overflow-hidden"
     >
-      <Image
-        src={LOGO_SRC}
-        alt="AfroStats"
-        fill
-        sizes={`${dim}px`}
-        className="object-contain"
-        onError={(e) => {
-          // fallback to letter mark if image fails
-          const target = e.currentTarget as HTMLImageElement;
-          target.style.display = "none";
-          const parent = target.parentElement;
-          if (parent) {
-            parent.classList.add(
-              "bg-primary",
-              "flex",
-              "items-center",
-              "justify-center",
-            );
-            parent.innerHTML = `<span class="text-white font-bold ${s.letter}">A</span>`;
-          }
-        }}
-      />
+      <Link href={"/"}>
+        <Image
+          src={LOGO_SRC}
+          alt="AfroStats"
+          fill
+          sizes={`${dim}px`}
+          className="object-contain"
+          onError={(e) => {
+            // fallback to letter mark if image fails
+            const target = e.currentTarget as HTMLImageElement;
+            target.style.display = "none";
+            const parent = target.parentElement;
+            if (parent) {
+              parent.classList.add(
+                "bg-primary",
+                "flex",
+                "items-center",
+                "justify-center",
+              );
+              parent.innerHTML = `<span class="text-white font-bold ${s.letter}">A</span>`;
+            }
+          }}
+        />
+      </Link>
     </div>
   );
 }

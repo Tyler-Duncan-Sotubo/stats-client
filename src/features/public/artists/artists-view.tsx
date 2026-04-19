@@ -66,7 +66,7 @@ export function ArtistsView({
       ) : (
         <div className="grid grid-cols-3 gap-4 sm:grid-cols-4 md:grid-cols-5">
           {artists.map((artist) => (
-            <ArtistCard key={artist.id} artist={artist} />
+            <ArtistCard key={artist.id} artist={artist} sortBy={currentSort} />
           ))}
         </div>
       )}
