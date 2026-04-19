@@ -31,6 +31,7 @@ export function AskBar({ defaultValue = "", className = "" }: AskBarProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const isSelectingRef = useRef(false); // ← tracks if user is clicking a suggestion
 
   // sync when defaultValue changes between page navigations
   useEffect(() => {
@@ -93,17 +94,19 @@ export function AskBar({ defaultValue = "", className = "" }: AskBarProps) {
     }
 
     document.addEventListener("mousedown", handleOutside);
-    document.addEventListener("touchstart", handleOutside); // ← add for mobile
+    document.addEventListener("touchstart", handleOutside);
     return () => {
       document.removeEventListener("mousedown", handleOutside);
-      document.removeEventListener("touchstart", handleOutside); // ← cleanup
+      document.removeEventListener("touchstart", handleOutside);
     };
   }, []);
 
   function navigate(q: string) {
+    const trimmed = q.trim();
+    if (!trimmed) return;
     setShowSuggestions(false);
-    router.push(`/ask/${toSlug(q)}`);
-    setShowSuggestions(false); // ← add
+    setSuggestions([]);
+    router.push(`/ask/${toSlug(trimmed)}`);
   }
 
   function handleSubmit(e: React.FormEvent) {
@@ -111,31 +114,41 @@ export function AskBar({ defaultValue = "", className = "" }: AskBarProps) {
     const q = query.trim();
     if (!q) return;
     navigate(q);
-    setShowSuggestions(false); // ← add
   }
 
   function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
-    if (!showSuggestions || suggestions.length === 0) return;
-
     if (e.key === "ArrowDown") {
       e.preventDefault();
+      if (!showSuggestions || suggestions.length === 0) return;
       setActiveSuggestion((prev) =>
         prev < suggestions.length - 1 ? prev + 1 : 0,
       );
     } else if (e.key === "ArrowUp") {
       e.preventDefault();
+      if (!showSuggestions || suggestions.length === 0) return;
       setActiveSuggestion((prev) =>
         prev > 0 ? prev - 1 : suggestions.length - 1,
       );
-    } else if (e.key === "Enter" && activeSuggestion >= 0) {
+    } else if (e.key === "Enter") {
       e.preventDefault();
-      const selected = suggestions[activeSuggestion];
-      setQuery(selected.question);
-      navigate(selected.question);
+      if (activeSuggestion >= 0 && suggestions[activeSuggestion]) {
+        const selected = suggestions[activeSuggestion];
+        setQuery(selected.question);
+        navigate(selected.question);
+      } else {
+        navigate(query);
+      }
     } else if (e.key === "Escape") {
       setShowSuggestions(false);
       setActiveSuggestion(-1);
     }
+  }
+
+  function handleSuggestionMouseDown(s: AskQuestion) {
+    // mousedown fires before blur — set flag so blur doesn't close dropdown
+    isSelectingRef.current = true;
+    setQuery(s.question);
+    navigate(s.question);
   }
 
   return (
@@ -156,9 +169,16 @@ export function AskBar({ defaultValue = "", className = "" }: AskBarProps) {
             }}
             onKeyDown={handleKeyDown}
             onBlur={() => {
+              // don't close if user is clicking a suggestion
+              if (isSelectingRef.current) {
+                isSelectingRef.current = false;
+                return;
+              }
               setTimeout(() => setShowSuggestions(false), 150);
             }}
-            onFocus={() => suggestions.length > 0 && setShowSuggestions(true)}
+            onFocus={() => {
+              if (suggestions.length > 0) setShowSuggestions(true);
+            }}
             placeholder="Ask anything about Afrobeats..."
             className="pl-9 pr-8 bg-white focus-visible:ring-1 h-10 text-base placeholder:text-xs lg:placeholder:text-base"
             autoComplete="off"
@@ -169,7 +189,8 @@ export function AskBar({ defaultValue = "", className = "" }: AskBarProps) {
           {!loading && query && (
             <button
               type="button"
-              onClick={() => {
+              onMouseDown={(e) => {
+                e.preventDefault(); // prevent blur
                 setQuery("");
                 setSuggestions([]);
                 setShowSuggestions(false);
@@ -190,7 +211,9 @@ export function AskBar({ defaultValue = "", className = "" }: AskBarProps) {
             <button
               key={s.id}
               type="button"
-              onClick={() => {
+              onMouseDown={() => handleSuggestionMouseDown(s)}
+              onTouchEnd={() => {
+                // handle mobile tap
                 setQuery(s.question);
                 navigate(s.question);
               }}
