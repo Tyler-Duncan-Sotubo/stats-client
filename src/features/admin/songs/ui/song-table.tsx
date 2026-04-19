@@ -33,9 +33,6 @@ export function SongTable({
       onPage={onPage}
       selectable
       columnToggle
-      searchable
-      searchPlaceholder="Search songs..."
-      searchColumn="title"
       emptyMessage="No songs found"
       onRowClick={(song) => router.push(`/admin/songs/${song.id}`)}
       bulkActions={(selected, clear) => (

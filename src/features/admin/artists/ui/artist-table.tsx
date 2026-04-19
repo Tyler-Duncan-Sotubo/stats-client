@@ -33,9 +33,6 @@ export function ArtistTable({
       onPage={onPage}
       selectable
       columnToggle
-      searchable
-      searchPlaceholder="Search artists..."
-      searchColumn="name"
       emptyMessage="No artists found"
       onRowClick={(artist) => router.push(`/admin/artists/${artist.id}`)}
       bulkActions={(selected, clear) => (

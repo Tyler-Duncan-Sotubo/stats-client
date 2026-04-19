@@ -32,7 +32,7 @@ export function ArtistCreate() {
         </CardHeader>
         <CardContent>
           <ArtistForm
-            onSubmit={createArtist}
+            onSubmit={createArtist as any}
             loading={loading}
             error={error}
             submitLabel="Create artist"
