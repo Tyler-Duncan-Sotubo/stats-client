@@ -22,12 +22,8 @@ export function Navbar({ charts }: { charts: AvailableChart[] }) {
       </div>
 
       {/* Right side */}
-      <div className="flex-1 flex justify-between items-center gap-4 px-6">
+      <div className="flex-1 flex justify-between items-center gap-4 px-3">
         <AskBar />
-        <Button variant="outline" size="sm" className="shrink-0 gap-2">
-          <User className="w-4 h-4" />
-          Sign in
-        </Button>
       </div>
     </header>
   );
