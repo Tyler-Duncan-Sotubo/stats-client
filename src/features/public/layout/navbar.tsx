@@ -6,6 +6,7 @@ import { Button } from "@/shared/ui/button";
 import { AskBar } from "./ask-bar";
 import { MobileNav } from "./mobile-nav";
 import { AvailableChart } from "@/lib/api/public";
+import { Logo, LogoMark } from "@/shared/ui/logo";
 
 export function Navbar({ charts }: { charts: AvailableChart[] }) {
   return (
@@ -14,11 +15,7 @@ export function Navbar({ charts }: { charts: AvailableChart[] }) {
 
       <div className="md:w-64 shrink-0 flex items-center px-4 h-full">
         <MobileNav charts={charts} />
-        <Link href="/" className="flex items-center gap-2">
-          <div className="w-7 h-7 rounded-md bg-primary flex items-center justify-center">
-            <span className="text-white text-xs font-bold">A</span>
-          </div>
-        </Link>
+        <LogoMark size="lg" />
       </div>
 
       {/* Right side */}

@@ -4,6 +4,7 @@
 import Image from "next/image";
 import { formatNumber } from "@/shared/utils/format";
 import type { PublicArtist } from "@/lib/api/public";
+import { LogoMark } from "@/shared/ui/logo";
 
 interface Props {
   left: PublicArtist | null;
@@ -231,9 +232,7 @@ export function CompareEmbedView({ left, right }: Props) {
       {/* Header bar */}
       <div className="flex items-center justify-between px-4 py-2 border-b border-border bg-muted/30">
         <div className="flex items-center gap-1.5">
-          <div className="w-4 h-4 rounded-sm bg-primary flex items-center justify-center">
-            <span className="text-white text-[8px] font-bold">T</span>
-          </div>
+          <LogoMark size="lg" />
           <span className="text-xs font-semibold text-muted-foreground tracking-wide">
             TooXclusive Stats
           </span>
