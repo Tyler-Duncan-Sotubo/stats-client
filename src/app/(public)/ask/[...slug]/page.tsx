@@ -6,6 +6,7 @@ import {
 } from "@/lib/api/public";
 import { AskView } from "@/features/public/ask/ask-view";
 import type { Metadata } from "next";
+import { toTitleCase } from "@/shared/utils/format";
 
 const BASE_URL = "https://tooxclusive.com/stats";
 
@@ -25,11 +26,11 @@ export async function generateMetadata({
   const canonical = `${BASE_URL}/ask/${slug.join("/")}`;
 
   return {
-    title: `${question} — TooXclusive Stats`,
-    description: `Get the answer to "${question}" — African and Afrobeats music statistics powered by TooXclusive Stats.`,
+    title: `${toTitleCase(question)} — TooXclusive Stats`,
+    description: `Get the answer to "${toTitleCase(question)}" — African and Afrobeats music statistics powered by TooXclusive Stats.`,
     openGraph: {
-      title: `${question} — TooXclusive Stats`,
-      description: `Get the answer to "${question}" — African and Afrobeats music statistics powered by TooXclusive Stats.`,
+      title: `${toTitleCase(question)} — TooXclusive Stats`,
+      description: `Get the answer to "${toTitleCase(question)}" — African and Afrobeats music statistics powered by TooXclusive Stats.`,
       url: canonical,
       siteName: "TooXclusive Stats",
       type: "website",
@@ -37,8 +38,8 @@ export async function generateMetadata({
     twitter: {
       card: "summary_large_image",
       site: "@tooxclusive",
-      title: `${question} — TooXclusive Stats`,
-      description: `Get the answer to "${question}" — African and Afrobeats music statistics.`,
+      title: `${toTitleCase(question)} — TooXclusive Stats`,
+      description: `Get the answer to "${toTitleCase(question)}" — African and Afrobeats music statistics.`,
     },
     alternates: {
       canonical,
