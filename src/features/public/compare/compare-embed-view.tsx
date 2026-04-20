@@ -180,9 +180,6 @@ export function CompareEmbedView({ left, right }: Props) {
       <div className="flex items-center justify-between px-4 py-2 border-b border-border">
         <div className="flex items-center gap-1.5">
           <LogoMark size="lg" />
-          <span className="text-xs font-semibold tracking-wide">
-            TooXclusive Stats
-          </span>
         </div>
         <span className="text-xs">Artist Comparison</span>
       </div>
@@ -242,15 +239,15 @@ export function CompareEmbedView({ left, right }: Props) {
 
         {/* Footer */}
         <div className="flex items-center justify-between pt-2 border-t border-border">
-          <p className="text-xs">
-            Powered by{" "}
+          <p className="text-[9px]">
+            Powered by{"  "}
             <a
               href={BASE_URL}
               target="_blank"
               rel="noopener noreferrer"
               className="text-primary hover:underline font-bold"
             >
-              TooXclusive Stats
+              TooXclusive
             </a>
           </p>
           {left && right && (

@@ -36,7 +36,7 @@ export function ArtistEmbedView({ artist }: Props) {
             className="object-cover object-top opacity-30"
           />
         )}
-        <div className="absolute inset-0 bg-gradient-to-t from-background to-transparent" />
+        <div className="absolute inset-0 bg-linear-to-t from-background to-transparent" />
 
         {/* Artist info over hero */}
         <div className="absolute bottom-3 left-4 flex items-end gap-3">
@@ -171,7 +171,7 @@ export function ArtistEmbedView({ artist }: Props) {
 
       {/* Footer */}
       <div className="px-4 py-2.5 flex items-center justify-between">
-        <p className="text-xs text-muted-foreground/40">
+        <p className="text-[8px] text-muted-foreground/40">
           Powered by{" "}
           <a
             href={BASE_URL}
