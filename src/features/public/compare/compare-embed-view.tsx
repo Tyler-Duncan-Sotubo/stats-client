@@ -21,9 +21,23 @@ const STATS = [
 const BASE_URL = "https://tooxclusive.com/stats";
 
 function ArtistHeader({ artist }: { artist: PublicArtist }) {
+  const ukChart = artist.charts?.find(
+    (c) =>
+      c.chartName === "uk_official_singles" ||
+      c.chartName === "official_afrobeats_chart",
+  );
+  const billboardChart = artist.charts?.find(
+    (c) => c.chartName === "billboard_hot_100",
+  );
+
   return (
     <div className="flex flex-col items-center gap-2 text-center">
-      <div className="relative w-16 h-16 rounded-full overflow-hidden bg-muted shrink-0">
+      <a
+        href={`${BASE_URL}/artists/${artist.slug}`}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="relative w-16 h-16 rounded-full overflow-hidden bg-muted shrink-0 hover:opacity-80 transition-opacity"
+      >
         {artist.imageUrl ? (
           <Image
             src={artist.imageUrl}
@@ -34,24 +48,31 @@ function ArtistHeader({ artist }: { artist: PublicArtist }) {
           />
         ) : (
           <div className="flex h-full w-full items-center justify-center">
-            <span className="text-xl font-bold text-muted-foreground/30">
+            <span className="text-xl font-bold text-white">
               {artist.name[0]}
             </span>
           </div>
         )}
-      </div>
+      </a>
       <div>
-        <p className="text-sm font-bold text-foreground">{artist.name}</p>
-        {artist.originCountry && (
-          <p className="text-xs text-muted-foreground">
-            {artist.originCountry}
-          </p>
-        )}
-        {artist.isAfrobeats && (
-          <span className="inline-block mt-0.5 text-[10px] px-1.5 py-0.5 rounded-sm bg-primary/10 text-primary font-medium">
-            Afrobeats
-          </span>
-        )}
+        <p className="text-base font-bold text-white">{artist.name}</p>
+        <div className="flex items-center justify-center gap-1.5 mt-0.5 flex-wrap">
+          {ukChart && (
+            <span className="text-[10px] px-1.5 py-0.5 rounded-sm bg-muted text-muted-foreground font-medium">
+              UK #{ukChart.bestPeakPosition}
+              {Number(ukChart.weeksAtNumber1) > 0 && (
+                <span className="text-primary ml-0.5">
+                  ({ukChart.weeksAtNumber1}× #1)
+                </span>
+              )}
+            </span>
+          )}
+          {billboardChart && (
+            <span className="text-[10px] px-1.5 py-0.5 rounded-sm bg-muted text-muted-foreground font-medium">
+              BB #{billboardChart.bestPeakPosition}
+            </span>
+          )}
+        </div>
       </div>
     </div>
   );
@@ -74,79 +95,20 @@ function StatRow({
   return (
     <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-2 py-2.5 border-t border-border">
       <p
-        className={`text-base  tabular-nums text-right font-bold ${
-          leftWins ? "text-foreground" : "text-muted-foreground"
+        className={`text-base tabular-nums text-right font-bold ${
+          leftWins ? "text-white" : "text-white/60"
         }`}
       >
         {leftValue ? formatNumber(left) : "—"}
       </p>
-      <p className="text-xs text-muted-foreground/50 text-center w-28 shrink-0">
-        {label}
-      </p>
+      <p className="text-xs text-white/40 text-center w-28 shrink-0">{label}</p>
       <p
         className={`text-base tabular-nums text-left font-bold ${
-          rightWins ? "text-foreground" : "text-muted-foreground"
+          rightWins ? "text-white" : "text-white/60"
         }`}
       >
         {rightValue ? formatNumber(right) : "—"}
       </p>
-    </div>
-  );
-}
-
-function ChartRow({
-  label,
-  leftChart,
-  rightChart,
-}: {
-  label: string;
-  leftChart: PublicArtist["charts"][0] | undefined;
-  rightChart: PublicArtist["charts"][0] | undefined;
-}) {
-  const leftPeak = leftChart?.bestPeakPosition ?? null;
-  const rightPeak = rightChart?.bestPeakPosition ?? null;
-  const leftWins =
-    leftPeak !== null && (rightPeak === null || leftPeak < rightPeak);
-  const rightWins =
-    rightPeak !== null && (leftPeak === null || rightPeak < leftPeak);
-
-  return (
-    <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-2 py-2.5 border-t border-border">
-      <div
-        className={`text-right ${leftWins ? "text-foreground" : "text-muted-foreground"}`}
-      >
-        {leftChart ? (
-          <p className="text-sm font-medium tabular-nums">
-            #{leftChart.bestPeakPosition ?? "—"}
-            {Number(leftChart.weeksAtNumber1) > 0 && (
-              <span className="text-[10px] ml-1 text-primary">
-                ({leftChart.weeksAtNumber1}× #1)
-              </span>
-            )}
-          </p>
-        ) : (
-          <p className="text-sm text-muted-foreground">—</p>
-        )}
-      </div>
-      <p className="text-xs text-muted-foreground/50 text-center w-28 shrink-0">
-        {label}
-      </p>
-      <div
-        className={`text-left ${rightWins ? "text-foreground" : "text-muted-foreground"}`}
-      >
-        {rightChart ? (
-          <p className="text-sm font-medium tabular-nums">
-            #{rightChart.bestPeakPosition ?? "—"}
-            {Number(rightChart.weeksAtNumber1) > 0 && (
-              <span className="text-[10px] ml-1 text-primary">
-                ({rightChart.weeksAtNumber1}× #1)
-              </span>
-            )}
-          </p>
-        ) : (
-          <p className="text-sm text-muted-foreground">—</p>
-        )}
-      </div>
     </div>
   );
 }
@@ -169,36 +131,21 @@ function AwardRow({
     <>
       <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-2 py-2.5 border-t border-border">
         <p
-          className={`text-base tabular-nums text-right font-bold ${leftWins >= rightWins ? "text-foreground" : "text-muted-foreground"}`}
+          className={`text-base tabular-nums text-right font-bold ${leftWins >= rightWins ? "text-white" : "text-white/60"}`}
         >
           {leftWins > 0 ? leftWins : leftNoms > 0 ? `${leftNoms} noms` : "—"}
         </p>
-        <p className="text-xs text-muted-foreground/50 text-center w-28 shrink-0">
+        <p className="text-xs text-white/40 text-center w-28 shrink-0">
           Grammy
         </p>
         <p
-          className={`text-base tabular-nums text-left font-bold ${rightWins >= leftWins ? "text-foreground" : "text-muted-foreground"}`}
+          className={`text-base tabular-nums text-left font-bold ${rightWins >= leftWins ? "text-white" : "text-white/60"}`}
         >
           {rightWins > 0
             ? rightWins
             : rightNoms > 0
               ? `${rightNoms} noms`
               : "—"}
-        </p>
-      </div>
-      <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-2 py-2.5 border-t border-border">
-        <p
-          className={`text-base tabular-nums text-right font-bold ${leftTotalWins >= rightTotalWins ? "text-foreground" : "text-muted-foreground"}`}
-        >
-          {leftTotalWins > 0 ? leftTotalWins : "—"}
-        </p>
-        <p className="text-xs text-muted-foreground/50 text-center w-28 shrink-0">
-          Award Wins
-        </p>
-        <p
-          className={`text-base tabular-nums text-left font-bold ${rightTotalWins >= leftTotalWins ? "text-foreground" : "text-muted-foreground"}`}
-        >
-          {rightTotalWins > 0 ? rightTotalWins : "—"}
         </p>
       </div>
     </>
@@ -228,18 +175,16 @@ export function CompareEmbedView({ left, right }: Props) {
   ].slice(0, 3);
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col bg-black rounded-xl border border-border text-white">
       {/* Header bar */}
-      <div className="flex items-center justify-between px-4 py-2 border-b border-border bg-muted/30">
+      <div className="flex items-center justify-between px-4 py-2 border-b border-border">
         <div className="flex items-center gap-1.5">
           <LogoMark size="lg" />
-          <span className="text-xs font-semibold text-muted-foreground tracking-wide">
+          <span className="text-xs font-semibold tracking-wide">
             TooXclusive Stats
           </span>
         </div>
-        <span className="text-xs text-muted-foreground/50">
-          Artist Comparison
-        </span>
+        <span className="text-xs">Artist Comparison</span>
       </div>
 
       <div className="p-4 flex flex-col gap-4">
@@ -269,7 +214,7 @@ export function CompareEmbedView({ left, right }: Props) {
 
         {/* Spotify stats */}
         <div>
-          <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/50 mb-1">
+          <p className="text-[10px] font-semibold uppercase tracking-widest text-white/80 mb-1">
             Spotify
           </p>
           {STATS.map((stat) => (
@@ -285,7 +230,7 @@ export function CompareEmbedView({ left, right }: Props) {
         {/* Awards */}
         {(left?.awardsSummary || right?.awardsSummary) && (
           <div>
-            <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/50 mb-1">
+            <p className="text-[10px] font-semibold uppercase tracking-widest text-white/80 mb-1">
               Awards
             </p>
             <AwardRow
@@ -297,13 +242,13 @@ export function CompareEmbedView({ left, right }: Props) {
 
         {/* Footer */}
         <div className="flex items-center justify-between pt-2 border-t border-border">
-          <p className="text-xs text-muted-foreground/40">
+          <p className="text-xs">
             Powered by{" "}
             <a
               href={BASE_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-primary hover:underline"
+              className="text-primary hover:underline font-bold"
             >
               TooXclusive Stats
             </a>
@@ -313,7 +258,7 @@ export function CompareEmbedView({ left, right }: Props) {
               href={`${BASE_URL}/compare?left=${left.slug}&right=${right.slug}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-xs text-primary hover:underline"
+              className="text-sm text-primary hover:underline font-bold"
             >
               Full comparison →
             </a>
