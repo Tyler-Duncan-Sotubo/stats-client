@@ -39,7 +39,6 @@ export function Sidebar({ charts }: { charts: AvailableChart[] }) {
           </div>
 
           {/* Explore */}
-          {/* Explore */}
           <div className="px-3 py-3 border-b border-border">
             <p className="px-2 mb-1.5 text-xs font-semibold uppercase tracking-widest text-muted-foreground">
               Explore

@@ -6,7 +6,7 @@ import { Button } from "@/shared/ui/button";
 import { AskBar } from "./ask-bar";
 import { MobileNav } from "./mobile-nav";
 import { AvailableChart } from "@/lib/api/public";
-import { Logo, LogoMark } from "@/shared/ui/logo";
+import { LogoMark } from "@/shared/ui/logo";
 
 export function Navbar({ charts }: { charts: AvailableChart[] }) {
   return (
