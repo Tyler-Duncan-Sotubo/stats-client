@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { getArtist } from "@/lib/api/public";
+import { getArtist, getArtistHistory } from "@/lib/api/public";
 import { ArtistView } from "@/features/public/artist/artist-view";
 import type { Metadata } from "next";
 import Script from "next/script";
@@ -165,11 +165,15 @@ export default async function ArtistPage({ params }: Props) {
   const { slug } = await params;
 
   try {
-    const artist = await getArtist(slug);
+    const [artist, history] = await Promise.all([
+      getArtist(slug),
+      getArtistHistory(slug).catch(() => []),
+    ]);
+
     return (
       <>
         <ArtistSchema artist={artist} />
-        <ArtistView artist={artist} />
+        <ArtistView artist={artist} history={history} />
       </>
     );
   } catch {

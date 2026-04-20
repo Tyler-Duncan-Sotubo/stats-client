@@ -81,7 +81,7 @@ export const certificationColumns: ColumnDef<Certification>[] = [
     accessorKey: "title",
     header: "Title",
     cell: ({ row }) => (
-      <p className="text-sm truncate max-w-[200px]">{row.original.title}</p>
+      <p className="text-sm truncate max-w-50">{row.original.title}</p>
     ),
   },
 

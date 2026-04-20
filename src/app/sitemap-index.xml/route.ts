@@ -26,10 +26,17 @@ export async function GET() {
   </sitemap>`,
   ).join("");
 
+  const milestoneSitemap = `
+  <sitemap>
+    <loc>${BASE_URL}/sitemaps/milestones</loc>
+    <lastmod>${now}</lastmod>
+  </sitemap>`;
+
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${artistSitemaps}
 ${songSitemaps}
+${milestoneSitemap}
 </sitemapindex>`;
 
   return new NextResponse(xml, {

@@ -2,89 +2,52 @@ const BASE_URL = process.env.API_BASE_URL ?? "http://localhost:8000";
 const PUBLIC_BASE_URL =
   process.env.NEXT_PUBLIC_BACKEND_URL ?? "http://localhost:8000";
 
-async function embedFetch<T>(path: string, revalidate = 3600): Promise<T> {
-  const res = await fetch(`${BASE_URL}${path}`, {
-    next: { revalidate }, // ← ISR cache, revalidate every hour
-  });
-
-  if (!res.ok) {
-    throw new Error(`API error ${res.status} — ${path}`);
-  }
-
-  return res.json() as Promise<T>;
-}
+// ── Fetch helpers ─────────────────────────────────────────────────────────────
 
 async function apiFetch<T>(path: string): Promise<T> {
-  const res = await fetch(`${BASE_URL}${path}`, {
-    cache: "no-store",
-  });
-
-  if (!res.ok) {
-    throw new Error(`API error ${res.status} — ${path}`);
-  }
-
+  const res = await fetch(`${BASE_URL}${path}`, { cache: "no-store" });
+  if (!res.ok) throw new Error(`API error ${res.status} — ${path}`);
   return res.json() as Promise<T>;
 }
 
 async function publicFetch<T>(path: string): Promise<T> {
-  const res = await fetch(`${PUBLIC_BASE_URL}${path}`, {
-    cache: "no-store",
-  });
-
-  if (!res.ok) {
-    throw new Error(`API error ${res.status} — ${path}`);
-  }
-
+  const res = await fetch(`${PUBLIC_BASE_URL}${path}`, { cache: "no-store" });
+  if (!res.ok) throw new Error(`API error ${res.status} — ${path}`);
   return res.json() as Promise<T>;
 }
 
-// Sitemap functions — used for generating sitemaps
-export async function getIndexableArtists(
-  limit: number,
-  offset: number,
-): Promise<{ slug: string; updatedAt: string }[]> {
+async function embedFetch<T>(path: string, revalidate = 3600): Promise<T> {
+  const res = await fetch(`${BASE_URL}${path}`, { next: { revalidate } });
+  if (!res.ok) throw new Error(`API error ${res.status} — ${path}`);
+  return res.json() as Promise<T>;
+}
+
+function buildQuery(
+  params: Record<string, string | number | boolean | undefined>,
+): string {
+  const query = new URLSearchParams();
+  for (const [key, value] of Object.entries(params)) {
+    if (value !== undefined) query.set(key, String(value));
+  }
+  return query.toString();
+}
+
+// ── Sitemaps ──────────────────────────────────────────────────────────────────
+
+export function getIndexableArtists(limit: number, offset: number) {
   return apiFetch<{ slug: string; updatedAt: string }[]>(
     `/api/public/artists/indexable?limit=${limit}&offset=${offset}`,
   );
 }
 
-export async function getIndexableSongs(
-  limit: number,
-  offset: number,
-): Promise<{ slug: string; updatedAt: string }[]> {
-  return apiFetch<{ slug: string; updatedAt: string }[]>(
+export function getIndexableSongs(limit: number, offset: number) {
+  return apiFetch<{ slug: string; updatedAt: string; totalStreams: number }[]>(
     `/api/public/songs/indexable?limit=${limit}&offset=${offset}`,
   );
 }
 
-// ── Trending ──────────────────────────────────────────────────────────────────
-
-export function getTrendingArtists(params?: {
-  limit?: number;
-  isAfrobeats?: boolean;
-  country?: string;
-}) {
-  const query = new URLSearchParams();
-  if (params?.limit) query.set("limit", String(params.limit));
-  if (params?.isAfrobeats !== undefined)
-    query.set("isAfrobeats", String(params.isAfrobeats));
-  if (params?.country) query.set("country", params.country);
-
-  return apiFetch<TrendingArtistsResponse>(
-    `/api/public/trending/artists?${query}`,
-  );
-}
-
-export function getTrendingSongs(params?: {
-  limit?: number;
-  isAfrobeats?: boolean;
-}) {
-  const query = new URLSearchParams();
-  if (params?.limit) query.set("limit", String(params.limit));
-  if (params?.isAfrobeats !== undefined)
-    query.set("isAfrobeats", String(params.isAfrobeats));
-
-  return apiFetch<TrendingSongsResponse>(`/api/public/trending/songs?${query}`);
+export function getIndexableQuestions() {
+  return apiFetch<IndexableQuestion[]>(`/api/public/ask/indexable`);
 }
 
 // ── Artists ───────────────────────────────────────────────────────────────────
@@ -94,22 +57,51 @@ export function getArtist(slug: string) {
 }
 
 export function getArtists(params?: ArtistBrowseParams) {
-  const query = new URLSearchParams();
-  if (params?.limit) query.set("limit", String(params.limit));
-  if (params?.page) query.set("page", String(params.page));
-  if (params?.letter) query.set("letter", params.letter);
-  if (params?.country) query.set("country", params.country);
-  if (params?.isAfrobeats !== undefined)
-    query.set("isAfrobeats", String(params.isAfrobeats));
-  if (params?.sortBy) query.set("sortBy", params.sortBy);
+  const q = buildQuery({
+    limit: params?.limit,
+    page: params?.page,
+    letter: params?.letter,
+    country: params?.country,
+    isAfrobeats: params?.isAfrobeats,
+    sortBy: params?.sortBy,
+  });
+  return apiFetch<ArtistBrowseResponse>(`/api/public/artists?${q}`);
+}
 
-  return apiFetch<ArtistBrowseResponse>(`/api/public/artists?${query}`);
+export function getArtistHistory(slug: string) {
+  return apiFetch<ArtistHistoryPoint[]>(`/api/public/artists/${slug}/history`);
+}
+
+export function suggestArtists(params?: ArtistBrowseParams) {
+  const q = buildQuery({
+    limit: params?.limit,
+    page: params?.page,
+    letter: params?.letter,
+    country: params?.country,
+    isAfrobeats: params?.isAfrobeats,
+    sortBy: params?.sortBy,
+  });
+  return publicFetch<ArtistBrowseResponse>(`/api/public/artists?${q}`);
+}
+
+export function compareSuggestArtist(slug: string) {
+  return publicFetch<PublicArtist>(`/api/public/artists/${slug}`);
 }
 
 // ── Songs ─────────────────────────────────────────────────────────────────────
 
 export function getSong(slug: string) {
   return apiFetch<PublicSong>(`/api/public/songs/${slug}`);
+}
+
+export function getSongHistory(slug: string) {
+  return apiFetch<SongHistoryPoint[]>(`/api/public/songs/${slug}/history`);
+}
+
+export function getArtistSongs(slug: string, limit = 20) {
+  return apiFetch<ArtistSongEntry[]>(
+    `/api/public/songs/${slug}/songs?limit=${limit}`,
+  );
 }
 
 // ── Charts ────────────────────────────────────────────────────────────────────
@@ -131,15 +123,12 @@ export function getStreamLeaderboard(params?: {
   isAfrobeats?: boolean;
   country?: string;
 }) {
-  const query = new URLSearchParams();
-  if (params?.limit) query.set("limit", String(params.limit));
-  if (params?.isAfrobeats !== undefined)
-    query.set("isAfrobeats", String(params.isAfrobeats));
-  if (params?.country) query.set("country", params.country);
-
-  return apiFetch<LeaderboardResponse>(
-    `/api/public/leaderboard/streams?${query}`,
-  );
+  const q = buildQuery({
+    limit: params?.limit,
+    isAfrobeats: params?.isAfrobeats,
+    country: params?.country,
+  });
+  return apiFetch<LeaderboardResponse>(`/api/public/leaderboard/streams?${q}`);
 }
 
 export function getListenerLeaderboard(params?: {
@@ -147,14 +136,13 @@ export function getListenerLeaderboard(params?: {
   isAfrobeats?: boolean;
   country?: string;
 }) {
-  const query = new URLSearchParams();
-  if (params?.limit) query.set("limit", String(params.limit));
-  if (params?.isAfrobeats !== undefined)
-    query.set("isAfrobeats", String(params.isAfrobeats));
-  if (params?.country) query.set("country", params.country);
-
+  const q = buildQuery({
+    limit: params?.limit,
+    isAfrobeats: params?.isAfrobeats,
+    country: params?.country,
+  });
   return apiFetch<LeaderboardResponse>(
-    `/api/public/leaderboard/listeners?${query}`,
+    `/api/public/leaderboard/listeners?${q}`,
   );
 }
 
@@ -162,35 +150,73 @@ export function getSongLeaderboard(params?: {
   limit?: number;
   isAfrobeats?: boolean;
 }) {
-  const query = new URLSearchParams();
-  if (params?.limit) query.set("limit", String(params.limit));
-  if (params?.isAfrobeats !== undefined)
-    query.set("isAfrobeats", String(params.isAfrobeats));
+  const q = buildQuery({
+    limit: params?.limit,
+    isAfrobeats: params?.isAfrobeats,
+  });
+  return apiFetch<LeaderboardResponse>(`/api/public/leaderboard/songs?${q}`);
+}
 
-  return apiFetch<LeaderboardResponse>(
-    `/api/public/leaderboard/songs?${query}`,
+// ── Trending ──────────────────────────────────────────────────────────────────
+
+export function getTrendingArtists(params?: {
+  limit?: number;
+  isAfrobeats?: boolean;
+  country?: string;
+}) {
+  const q = buildQuery({
+    limit: params?.limit,
+    isAfrobeats: params?.isAfrobeats,
+    country: params?.country,
+  });
+  return apiFetch<TrendingArtistsResponse>(`/api/public/trending/artists?${q}`);
+}
+
+export function getTrendingSongs(params?: {
+  limit?: number;
+  isAfrobeats?: boolean;
+}) {
+  const q = buildQuery({
+    limit: params?.limit,
+    isAfrobeats: params?.isAfrobeats,
+  });
+  return apiFetch<TrendingSongsResponse>(`/api/public/trending/songs?${q}`);
+}
+
+// ── Milestones ────────────────────────────────────────────────────────────────
+
+export function getMilestoneCounts() {
+  return apiFetch<MilestoneCountsResponse>(`/api/public/milestones`);
+}
+
+export function getArtistMilestone(params: {
+  tier: string;
+  isAfrobeats?: boolean;
+  page?: number;
+  limit?: number;
+}) {
+  const q = buildQuery({
+    isAfrobeats: params.isAfrobeats,
+    page: params.page,
+    limit: params.limit,
+  });
+  return apiFetch<MilestoneArtistResponse>(
+    `/api/public/milestones/artists/${params.tier}?${q}`,
+  );
+}
+
+export function getSongMilestone(params: {
+  tier: string;
+  page?: number;
+  limit?: number;
+}) {
+  const q = buildQuery({ page: params.page, limit: params.limit });
+  return apiFetch<MilestoneSongResponse>(
+    `/api/public/milestones/songs/${params.tier}?${q}`,
   );
 }
 
 // ── Ask ───────────────────────────────────────────────────────────────────────
-
-export interface AskResult {
-  answer: string;
-  toolUsed: string | null;
-  data: any;
-  slug: string | null;
-}
-
-export interface AskQuestion {
-  id: string;
-  question: string;
-  slug: string;
-  toolUsed: string | null;
-  answer: string | null;
-  askCount: number;
-  lastAsked: string | null;
-  createdAt: string | null;
-}
 
 export async function askQuestion(question: string): Promise<AskResult> {
   const res = await fetch(`${PUBLIC_BASE_URL}/api/public/ask`, {
@@ -198,11 +224,7 @@ export async function askQuestion(question: string): Promise<AskResult> {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ question }),
   });
-
-  if (!res.ok) {
-    throw new Error(`Ask API error ${res.status}`);
-  }
-
+  if (!res.ok) throw new Error(`Ask API error ${res.status}`);
   return res.json() as Promise<AskResult>;
 }
 
@@ -228,11 +250,8 @@ export function suggestQuestions(q: string, limit = 5) {
   );
 }
 
-export function getIndexableQuestions() {
-  return apiFetch<IndexableQuestion[]>(`/api/public/ask/indexable`);
-}
+// ── Embed (ISR cached) ────────────────────────────────────────────────────────
 
-// Embed-specific functions — cached heavily  ─────────────────────────────────────────────────────────────────────
 export function getArtistCached(slug: string, revalidate = 3600) {
   return embedFetch<PublicArtist>(`/api/public/artists/${slug}`, revalidate);
 }
@@ -241,7 +260,7 @@ export function getChartCached(
   chartName: string,
   territory: string,
   limit = 10,
-  revalidate = 1800, // 30 mins — charts update more often
+  revalidate = 1800,
 ) {
   return embedFetch<ChartResponse>(
     `/api/public/charts/${chartName}/${territory}?limit=${limit}`,
@@ -253,45 +272,18 @@ export function getTrendingArtistsCached(
   params?: { limit?: number; isAfrobeats?: boolean; country?: string },
   revalidate = 1800,
 ) {
-  const query = new URLSearchParams();
-  if (params?.limit) query.set("limit", String(params.limit));
-  if (params?.isAfrobeats !== undefined)
-    query.set("isAfrobeats", String(params.isAfrobeats));
-  if (params?.country) query.set("country", params.country);
-
+  const q = buildQuery({
+    limit: params?.limit,
+    isAfrobeats: params?.isAfrobeats,
+    country: params?.country,
+  });
   return embedFetch<TrendingArtistsResponse>(
-    `/api/public/trending/artists?${query}`,
+    `/api/public/trending/artists?${q}`,
     revalidate,
   );
 }
 
-export function suggestArtists(params?: ArtistBrowseParams) {
-  const query = new URLSearchParams();
-  if (params?.limit) query.set("limit", String(params.limit));
-  if (params?.page) query.set("page", String(params.page));
-  if (params?.letter) query.set("letter", params.letter);
-  if (params?.country) query.set("country", params.country);
-  if (params?.isAfrobeats !== undefined)
-    query.set("isAfrobeats", String(params.isAfrobeats));
-  if (params?.sortBy) query.set("sortBy", params.sortBy);
-
-  return publicFetch<ArtistBrowseResponse>(`/api/public/artists?${query}`);
-}
-
-export function compareSuggestArtist(slug: string) {
-  return publicFetch<PublicArtist>(`/api/public/artists/${slug}`);
-}
-
 // ── Types ─────────────────────────────────────────────────────────────────────
-export interface IndexableSong {
-  slug: string;
-  updatedAt: string;
-}
-
-export interface IndexableQuestion {
-  slug: string;
-  updatedAt: string;
-}
 
 export interface ArtistBrowseParams {
   limit?: number;
@@ -304,12 +296,7 @@ export interface ArtistBrowseParams {
 
 export interface ArtistBrowseResponse {
   data: BrowseArtist[];
-  meta: {
-    total: number;
-    page: number;
-    limit: number;
-    totalPages: number;
-  };
+  meta: { total: number; page: number; limit: number; totalPages: number };
 }
 
 export interface BrowseArtist {
@@ -321,65 +308,6 @@ export interface BrowseArtist {
   isAfrobeats: boolean;
   totalStreams: number | null;
   monthlyListeners: number | null;
-}
-
-export interface TrendingArtistsResponse {
-  data: TrendingArtist[];
-  meta: { total: number; snapshotDate: string | null };
-}
-
-export interface TrendingSongsResponse {
-  data: TrendingSong[];
-  meta: { total: number; snapshotDate: string | null };
-}
-
-export interface TrendingArtist {
-  id: string;
-  name: string;
-  slug: string | null;
-  imageUrl: string | null;
-  originCountry: string | null;
-  isAfrobeats: boolean;
-  spotifyId: string | null;
-  snapshotDate: string;
-  dailyStreams: number | null;
-  dailyGrowth: number | null;
-  growth7d: number | null;
-  momentumScore: number | null;
-  totalStreams: number | null;
-  monthlyListeners: number | null;
-  bestChartPeak: number | null;
-  bestChartName: string | null;
-  bestChartTerritory: string | null;
-}
-
-export interface TrendingSong {
-  id: string;
-  title: string;
-  slug: string | null;
-  imageUrl: string | null;
-  spotifyTrackId: string | null;
-  isAfrobeats: boolean;
-  artistId: string;
-  artistName: string | null;
-  artistSlug: string | null;
-  artistImageUrl: string | null;
-  snapshotDate: string;
-  dailyStreams: number | null;
-  dailyGrowth: number | null;
-  growth7d: number | null;
-  momentumScore: number | null;
-  totalStreams: number | null;
-  bestChartPeak: number | null;
-  bestChartName: string | null;
-  bestChartTerritory: string | null;
-}
-
-export interface ArtistAwardsSummary {
-  totalWins: number;
-  totalNominations: number;
-  grammyWins: number;
-  grammyNominations: number;
 }
 
 export interface PublicArtist {
@@ -407,6 +335,13 @@ export interface PublicArtist {
   awards: ArtistAward[];
   topSongs: ArtistSong[];
   awardsSummary: ArtistAwardsSummary;
+}
+
+export interface ArtistAwardsSummary {
+  totalWins: number;
+  totalNominations: number;
+  grammyWins: number;
+  grammyNominations: number;
 }
 
 export interface ArtistCertification {
@@ -467,6 +402,27 @@ export interface ArtistSong {
   releaseDate: string | null;
 }
 
+export interface ArtistHistoryPoint {
+  date: string;
+  totalStreams: number | null;
+  dailyStreams: number | null;
+  dailyGrowth: number | null;
+  growth7d: number | null;
+}
+
+export interface ArtistSongEntry {
+  id: string;
+  title: string;
+  slug: string | null;
+  imageUrl: string | null;
+  releaseDate: string | null;
+  spotifyTrackId: string | null;
+  isAfrobeats: boolean;
+  explicit: boolean;
+  totalStreams: number | null;
+  dailyStreams: number | null;
+}
+
 export interface PublicSong {
   id: string;
   title: string;
@@ -504,6 +460,66 @@ export interface SongFeature {
   artistName: string | null;
   artistSlug: string | null;
   artistImageUrl: string | null;
+}
+
+export interface SongHistoryPoint {
+  date: string;
+  totalStreams: number | null;
+  dailyStreams: number | null;
+  dailyGrowth: number | null;
+  growth7d: number | null;
+}
+
+export interface TrendingArtistsResponse {
+  data: TrendingArtist[];
+  meta: { total: number; snapshotDate: string | null };
+}
+
+export interface TrendingSongsResponse {
+  data: TrendingSong[];
+  meta: { total: number; snapshotDate: string | null };
+}
+
+export interface TrendingArtist {
+  id: string;
+  name: string;
+  slug: string | null;
+  imageUrl: string | null;
+  originCountry: string | null;
+  isAfrobeats: boolean;
+  spotifyId: string | null;
+  snapshotDate: string;
+  dailyStreams: number | null;
+  dailyGrowth: number | null;
+  growth7d: number | null;
+  momentumScore: number | null;
+  totalStreams: number | null;
+  monthlyListeners: number | null;
+  bestChartPeak: number | null;
+  bestChartName: string | null;
+  bestChartTerritory: string | null;
+}
+
+export interface TrendingSong {
+  id: string;
+  title: string;
+  slug: string | null;
+  imageUrl: string | null;
+  spotifyTrackId: string | null;
+  isAfrobeats: boolean;
+  artistId: string;
+  artistName: string | null;
+  artistSlug: string | null;
+  artistImageUrl: string | null;
+  snapshotDate: string;
+  dailyStreams: number | null;
+  dailyGrowth: number | null;
+  growth7d: number | null;
+  momentumScore: number | null;
+  totalStreams: number | null;
+  bestChartPeak: number | null;
+  bestChartName: string | null;
+  bestChartTerritory: string | null;
 }
 
 export interface AvailableChart {
@@ -567,4 +583,90 @@ export interface LeaderboardEntry {
   dailyChange?: number | null;
   peakListeners?: number | null;
   globalRank?: number | null;
+}
+
+export interface MilestoneCountsResponse {
+  artists: Record<string, number>;
+  songs: Record<string, number>;
+  afrobeatsArtists: Record<string, number>;
+}
+
+export interface MilestoneArtistEntry {
+  rank: number;
+  artistId: string;
+  artistName: string;
+  artistSlug: string | null;
+  imageUrl: string | null;
+  originCountry: string | null;
+  isAfrobeats: boolean;
+  totalStreams: number;
+  dailyStreams: number | null;
+}
+
+export interface MilestoneSongEntry {
+  rank: number;
+  songId: string;
+  songTitle: string;
+  songSlug: string | null;
+  imageUrl: string | null;
+  artistId: string;
+  artistName: string;
+  artistSlug: string | null;
+  isAfrobeats: boolean;
+  totalStreams: number;
+  dailyStreams: number | null;
+  releaseDate: string | null;
+}
+
+export interface MilestoneArtistResponse {
+  data: MilestoneArtistEntry[];
+  meta: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+    threshold: number;
+    tier: string;
+  };
+}
+
+export interface MilestoneSongResponse {
+  data: MilestoneSongEntry[];
+  meta: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+    threshold: number;
+    tier: string;
+  };
+}
+
+export interface AskResult {
+  answer: string;
+  toolUsed: string | null;
+  data: any;
+  slug: string | null;
+}
+
+export interface AskQuestion {
+  id: string;
+  question: string;
+  slug: string;
+  toolUsed: string | null;
+  answer: string | null;
+  askCount: number;
+  lastAsked: string | null;
+  createdAt: string | null;
+}
+
+export interface IndexableSong {
+  slug: string;
+  updatedAt: string;
+}
+
+export interface IndexableQuestion {
+  slug: string;
+  updatedAt: string;
+  question: string;
 }

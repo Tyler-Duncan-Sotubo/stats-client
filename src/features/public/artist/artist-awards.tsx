@@ -20,7 +20,7 @@ export function ArtistAwards({ awards }: { awards: ArtistAward[] }) {
         {sorted.map((award) => (
           <div
             key={award.id}
-            className="flex items-start gap-3 rounded-xl border border-border bg-card px-4 py-3"
+            className="flex  items-start gap-3 rounded-xl border border-border bg-card px-4 py-3"
           >
             <div
               className={`mt-0.5 shrink-0 ${
@@ -39,12 +39,12 @@ export function ArtistAwards({ awards }: { awards: ArtistAward[] }) {
               <p className="text-sm font-medium text-foreground">
                 {award.awardName}
               </p>
-              <p className="text-xs text-muted-foreground mt-0.5">
+              <p className="text-[10px] text-muted-foreground mt-0.5">
                 {award.awardBody} · {award.ceremony ?? award.year}
               </p>
             </div>
             <span
-              className={`shrink-0 rounded-full px-2.5 py-0.5 text-xs font-semibold uppercase tracking-wide ${
+              className={`shrink-0 rounded-full px-2.5 py-0.5 text-[9px] font-semibold uppercase tracking-wide ${
                 award.result === "won"
                   ? "bg-amber-500/10 text-amber-600"
                   : "bg-muted text-muted-foreground"

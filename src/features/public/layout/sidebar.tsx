@@ -9,6 +9,7 @@ import {
   Sparkles,
   Music,
   Megaphone,
+  Medal,
 } from "lucide-react";
 
 import { SidebarLink } from "./sidebar-link";
@@ -38,6 +39,7 @@ export function Sidebar({ charts }: { charts: AvailableChart[] }) {
           </div>
 
           {/* Explore */}
+          {/* Explore */}
           <div className="px-3 py-3 border-b border-border">
             <p className="px-2 mb-1.5 text-xs font-semibold uppercase tracking-widest text-muted-foreground">
               Explore
@@ -50,6 +52,10 @@ export function Sidebar({ charts }: { charts: AvailableChart[] }) {
               <SidebarLink href="/charts">
                 <BarChart2 className="w-4.5 h-4.5 mr-2 shrink-0" />
                 Charts
+              </SidebarLink>
+              <SidebarLink href="/milestones">
+                <Medal className="w-4.5 h-4.5 mr-2 shrink-0" />
+                Milestones
               </SidebarLink>
             </div>
           </div>

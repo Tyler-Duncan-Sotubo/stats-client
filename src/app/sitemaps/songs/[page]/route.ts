@@ -4,12 +4,13 @@ import { getIndexableSongs } from "@/lib/api/public";
 
 const BASE_URL = "https://tooxclusive.com/stats";
 const PAGE_SIZE = 10000;
+const MIN_STREAMS = 1_000_000;
 
 export async function GET(
   _req: NextRequest,
   { params }: { params: Promise<{ page: string }> },
 ) {
-  const { page: pageParam } = await params; // ← await params
+  const { page: pageParam } = await params;
   const page = parseInt(pageParam ?? "1");
   const offset = (page - 1) * PAGE_SIZE;
 
@@ -20,16 +21,26 @@ export async function GET(
   }
 
   const urls = songs
-    .filter((s) => s.slug)
-    .map(
-      (s) => `
+    .filter((s) => s.slug && Number(s.totalStreams ?? 0) >= MIN_STREAMS)
+    .map((s) => {
+      const streams = Number(s.totalStreams ?? 0);
+      const priority =
+        streams >= 1_000_000_000
+          ? "0.9"
+          : streams >= 100_000_000
+            ? "0.8"
+            : streams >= 10_000_000
+              ? "0.7"
+              : "0.6";
+
+      return `
   <url>
     <loc>${BASE_URL}/songs/${s.slug}</loc>
     <lastmod>${new Date(s.updatedAt).toISOString()}</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
-  </url>`,
-    )
+    <priority>${priority}</priority>
+  </url>`;
+    })
     .join("");
 
   const xml = `<?xml version="1.0" encoding="UTF-8"?>

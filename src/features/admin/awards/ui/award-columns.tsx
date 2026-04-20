@@ -80,7 +80,7 @@ export const awardColumns: ColumnDef<Award>[] = [
     accessorKey: "awardName",
     header: "Award",
     cell: ({ row }) => (
-      <span className="text-sm truncate max-w-[180px] block">
+      <span className="text-sm truncate max-w-45 block">
         {row.original.awardName}
       </span>
     ),
@@ -91,7 +91,7 @@ export const awardColumns: ColumnDef<Award>[] = [
     accessorKey: "category",
     header: "Category",
     cell: ({ row }) => (
-      <span className="text-sm text-muted-foreground truncate max-w-[160px] block">
+      <span className="text-sm text-muted-foreground truncate max-w-40 block">
         {row.original.category}
       </span>
     ),

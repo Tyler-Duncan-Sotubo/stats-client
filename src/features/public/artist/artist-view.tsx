@@ -6,31 +6,30 @@ import { ArtistCharts } from "./artist-charts";
 import { ArtistAwards } from "./artist-awards";
 import { ArtistCertifications } from "./artist-certifications";
 import { ArtistRecords } from "./artist-records";
+import type { ArtistHistoryPoint } from "@/lib/api/public";
+import { ArtistSparkline } from "./artist-sparkline";
 
 interface ArtistViewProps {
   artist: PublicArtist;
+  history: ArtistHistoryPoint[];
 }
 
-export function ArtistView({ artist }: ArtistViewProps) {
+export function ArtistView({ artist, history }: ArtistViewProps) {
   return (
     <div className="pb-16">
       <ArtistHero artist={artist} />
-
       <div>
         <ArtistStatRow artist={artist} />
-
         <div className="mt-8 grid gap-8 grid-cols-1 xl:grid-cols-[minmax(0,1fr)_340px]">
-          {/* Left */}
           <div className="flex flex-col gap-8">
+            {history.length > 0 && <ArtistSparkline history={history} />}
             <ArtistTopSongs songs={artist.topSongs} />
             <ArtistCharts charts={artist.charts} />
-            <ArtistAwards awards={artist.awards} />
           </div>
-
-          {/* Right */}
           <div className="flex flex-col gap-6">
             <ArtistCertifications certifications={artist.certifications} />
             <ArtistRecords records={artist.records} />
+            <ArtistAwards awards={artist.awards} />
           </div>
         </div>
       </div>

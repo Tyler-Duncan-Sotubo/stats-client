@@ -78,9 +78,7 @@ export const recordColumns: ColumnDef<Record>[] = [
     accessorKey: "recordValue",
     header: "Value",
     cell: ({ row }) => (
-      <p className="text-sm max-w-[200px] truncate">
-        {row.original.recordValue}
-      </p>
+      <p className="text-sm max-w-50 truncate">{row.original.recordValue}</p>
     ),
   },
 
