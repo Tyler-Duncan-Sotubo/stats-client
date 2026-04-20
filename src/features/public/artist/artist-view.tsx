@@ -21,12 +21,12 @@ export function ArtistView({ artist, history }: ArtistViewProps) {
       <div>
         <ArtistStatRow artist={artist} />
         <div className="mt-8 grid gap-8 grid-cols-1 xl:grid-cols-[minmax(0,1fr)_340px]">
-          <div className="flex flex-col gap-8">
+          <div className="min-w-0 flex flex-col gap-8">
             {history.length > 0 && <ArtistSparkline history={history} />}
             <ArtistTopSongs songs={artist.topSongs} />
             <ArtistCharts charts={artist.charts} />
           </div>
-          <div className="flex flex-col gap-6">
+          <div className="min-w-0 flex flex-col gap-6">
             <ArtistCertifications certifications={artist.certifications} />
             <ArtistRecords records={artist.records} />
             <ArtistAwards awards={artist.awards} />

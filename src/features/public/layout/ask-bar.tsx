@@ -23,41 +23,45 @@ function toSlug(q: string): string {
 export function AskBar({ defaultValue = "", className = "" }: AskBarProps) {
   const router = useRouter();
   const pathname = usePathname();
+
   const [query, setQuery] = useState(defaultValue);
   const [loading, setLoading] = useState(false);
+  const [navigating, setNavigating] = useState(false);
   const [suggestions, setSuggestions] = useState<AskQuestion[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [activeSuggestion, setActiveSuggestion] = useState(-1);
+
   const inputRef = useRef<HTMLInputElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const isSelectingRef = useRef(false); // ← tracks if user is clicking a suggestion
+  const isSelectingRef = useRef(false);
 
-  // sync when defaultValue changes between page navigations
   useEffect(() => {
     setQuery(defaultValue);
     setSuggestions([]);
     setShowSuggestions(false);
     setActiveSuggestion(-1);
+    setNavigating(false);
   }, [defaultValue]);
 
-  // clear when user navigates away from /ask
   useEffect(() => {
     if (!pathname.startsWith("/ask")) {
       setQuery("");
       setSuggestions([]);
       setShowSuggestions(false);
       setActiveSuggestion(-1);
+      setNavigating(false);
+    } else {
+      setNavigating(false);
     }
   }, [pathname]);
 
-  // debounced suggest fetch
   useEffect(() => {
     if (debounceRef.current) clearTimeout(debounceRef.current);
 
     const q = query.trim();
 
-    if (q.length < 3) {
+    if (q.length < 3 || navigating) {
       setSuggestions([]);
       setShowSuggestions(false);
       return;
@@ -80,9 +84,8 @@ export function AskBar({ defaultValue = "", className = "" }: AskBarProps) {
     return () => {
       if (debounceRef.current) clearTimeout(debounceRef.current);
     };
-  }, [query]);
+  }, [query, navigating]);
 
-  // close on outside click
   useEffect(() => {
     function handleOutside(e: MouseEvent | TouchEvent) {
       if (
@@ -95,6 +98,7 @@ export function AskBar({ defaultValue = "", className = "" }: AskBarProps) {
 
     document.addEventListener("mousedown", handleOutside);
     document.addEventListener("touchstart", handleOutside);
+
     return () => {
       document.removeEventListener("mousedown", handleOutside);
       document.removeEventListener("touchstart", handleOutside);
@@ -104,6 +108,8 @@ export function AskBar({ defaultValue = "", className = "" }: AskBarProps) {
   function navigate(q: string) {
     const trimmed = q.trim();
     if (!trimmed) return;
+
+    setNavigating(true);
     setShowSuggestions(false);
     setSuggestions([]);
     router.push(`/ask/${toSlug(trimmed)}`);
@@ -145,11 +151,12 @@ export function AskBar({ defaultValue = "", className = "" }: AskBarProps) {
   }
 
   function handleSuggestionMouseDown(s: AskQuestion) {
-    // mousedown fires before blur — set flag so blur doesn't close dropdown
     isSelectingRef.current = true;
     setQuery(s.question);
     navigate(s.question);
   }
+
+  const showSpinner = loading || navigating;
 
   return (
     <div
@@ -159,17 +166,19 @@ export function AskBar({ defaultValue = "", className = "" }: AskBarProps) {
       <form onSubmit={handleSubmit}>
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground z-10" />
+
           <Input
             ref={inputRef}
             type="text"
             value={query}
+            disabled={navigating}
+            enterKeyHint="search"
             onChange={(e) => {
               setQuery(e.target.value);
               setShowSuggestions(true);
             }}
             onKeyDown={handleKeyDown}
             onBlur={() => {
-              // don't close if user is clicking a suggestion
               if (isSelectingRef.current) {
                 isSelectingRef.current = false;
                 return;
@@ -183,14 +192,16 @@ export function AskBar({ defaultValue = "", className = "" }: AskBarProps) {
             className="pl-9 pr-8 bg-white focus-visible:ring-1 h-10 text-base placeholder:text-xs lg:placeholder:text-base"
             autoComplete="off"
           />
-          {loading && (
+
+          {showSpinner && (
             <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground animate-spin" />
           )}
-          {!loading && query && (
+
+          {!showSpinner && query && (
             <button
               type="button"
               onMouseDown={(e) => {
-                e.preventDefault(); // prevent blur
+                e.preventDefault();
                 setQuery("");
                 setSuggestions([]);
                 setShowSuggestions(false);
@@ -204,16 +215,15 @@ export function AskBar({ defaultValue = "", className = "" }: AskBarProps) {
         </div>
       </form>
 
-      {/* Suggestions dropdown */}
-      {showSuggestions && suggestions.length > 0 && (
+      {showSuggestions && suggestions.length > 0 && !navigating && (
         <div className="absolute top-full left-0 right-0 mt-1 z-50 rounded-lg border border-border bg-background shadow-md overflow-hidden">
           {suggestions.map((s, i) => (
             <button
               key={s.id}
               type="button"
+              disabled={navigating}
               onMouseDown={() => handleSuggestionMouseDown(s)}
               onTouchEnd={() => {
-                // handle mobile tap
                 setQuery(s.question);
                 navigate(s.question);
               }}

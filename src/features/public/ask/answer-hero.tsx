@@ -20,6 +20,34 @@ function getBgForQuestion(question: string): string {
   return BG_COLORS[Math.abs(hash) % BG_COLORS.length];
 }
 
+/* ── NEW: answer formatter ───────────────────────── */
+
+function formatHeroAnswer(answer: string): string {
+  const lower = answer.toLowerCase();
+
+  // handle leaderboard-style answers
+  if (lower.includes("top 10")) {
+    const match = answer.match(/1\.\s([^,(]+).*?\(([\d,]+)\)/);
+
+    // if we can extract #1 → show clean insight
+    if (match) {
+      const name = match[1];
+      const streams = match[2];
+      return `${name} leads with ${streams} Spotify streams.`;
+    }
+
+    // fallback truncate
+    const parts = answer.split(",");
+    if (parts.length > 3) {
+      return parts.slice(0, 3).join(", ") + "…";
+    }
+  }
+
+  return answer;
+}
+
+/* ───────────────────────────────────────────────── */
+
 interface AnswerHeroProps {
   question: string;
   answer: string;
@@ -28,6 +56,8 @@ interface AnswerHeroProps {
 export function AnswerHero({ question, answer }: AnswerHeroProps) {
   const bg = useMemo(() => getBgForQuestion(question), [question]);
   const colors = useMemo(() => getTextColors(bg), [bg]);
+
+  const formattedAnswer = useMemo(() => formatHeroAnswer(answer), [answer]);
 
   return (
     <div
@@ -44,7 +74,7 @@ export function AnswerHero({ question, answer }: AnswerHeroProps) {
       />
 
       <div className="relative z-10">
-        {/* question label */}
+        {/* question */}
         <p
           className="text-xs font-semibold uppercase tracking-widest mb-3"
           style={{ color: colors.label }}
@@ -57,8 +87,15 @@ export function AnswerHero({ question, answer }: AnswerHeroProps) {
           className="text-3xl font-semibold leading-snug"
           style={{ color: colors.value }}
         >
-          {answer}
+          {formattedAnswer}
         </p>
+
+        {/* optional hint for long lists */}
+        {answer.toLowerCase().includes("top 10") && (
+          <p className="text-xs mt-2" style={{ color: colors.muted }}>
+            Full ranking shown below
+          </p>
+        )}
 
         {/* footer */}
         <p className="text-xs mt-4" style={{ color: colors.muted }}>

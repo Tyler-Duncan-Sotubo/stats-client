@@ -3,10 +3,11 @@ import Image from "next/image";
 import type { AskResult, AskQuestion } from "@/lib/api/public";
 import { formatNumber } from "@/shared/utils/format";
 import { AnswerHero } from "./answer-hero";
-import { Search } from "lucide-react";
 import { QuestionGroup } from "./question-group";
 import { GriotBanner } from "../layout/griot-banner";
 import { ChartList } from "./chart-list";
+import { ArtistRankedList } from "./artist-ranked-list";
+import { SongRankedList } from "./song-ranked-list";
 
 interface AskViewProps {
   question: string;
@@ -17,7 +18,12 @@ interface AskViewProps {
 
 export function AskView({ question, result, popular, recent }: AskViewProps) {
   const isArtist = result.toolUsed === "get_artist";
-  const isLeaderboard = result.toolUsed?.startsWith("get_leaderboard");
+  const isSongLeaderboard =
+    result.toolUsed === "get_leaderboard_songs" ||
+    result.toolUsed === "get_artist_top_songs";
+  const isArtistLeaderboard =
+    result.toolUsed?.startsWith("get_leaderboard") &&
+    result.toolUsed !== "get_leaderboard_songs";
   const isTrending = result.toolUsed?.startsWith("get_trending");
   const isChart = result.toolUsed === "get_chart";
 
@@ -35,8 +41,12 @@ export function AskView({ question, result, popular, recent }: AskViewProps) {
           <ArtistAnswerCard data={result.data} slug={result.slug} />
         )}
 
-        {(isLeaderboard || isTrending) && result.data?.data && (
-          <RankedList
+        {isSongLeaderboard && result.data?.data && (
+          <SongRankedList items={result.data.data} />
+        )}
+
+        {(isArtistLeaderboard || isTrending) && result.data?.data && (
+          <ArtistRankedList
             items={result.data.data}
             toolUsed={result.toolUsed ?? ""}
           />
@@ -56,15 +66,12 @@ export function AskView({ question, result, popular, recent }: AskViewProps) {
         </div>
       </div>
 
-      {/* Sidebar */}
       <aside className="hidden xl:block space-y-6 pb-10">
         <GriotBanner />
       </aside>
     </section>
   );
 }
-
-// ── Related questions (mobile — below content) ────────────────────────────────
 
 function RelatedQuestions({
   popular,
@@ -87,8 +94,6 @@ function RelatedQuestions({
   );
 }
 
-// ── Artist answer card ────────────────────────────────────────────────────────
-
 function ArtistAnswerCard({ data, slug }: { data: any; slug: string | null }) {
   const totalStreams =
     Number(data.totalStreamsAsLead ?? 0) +
@@ -101,7 +106,6 @@ function ArtistAnswerCard({ data, slug }: { data: any; slug: string | null }) {
 
   return (
     <div className="rounded-xl border border-border overflow-hidden bg-card mb-6">
-      {/* Header */}
       <div className="flex items-center gap-4 p-4 border-b border-border">
         {data.imageUrl && (
           <div className="relative w-16 h-16 rounded-full overflow-hidden shrink-0 bg-muted">
@@ -132,7 +136,6 @@ function ArtistAnswerCard({ data, slug }: { data: any; slug: string | null }) {
         )}
       </div>
 
-      {/* Key stats */}
       <div className="grid grid-cols-3 divide-x divide-border">
         {[
           {
@@ -165,7 +168,6 @@ function ArtistAnswerCard({ data, slug }: { data: any; slug: string | null }) {
         ))}
       </div>
 
-      {/* Stream breakdown */}
       {data.totalStreamsAsLead && data.totalStreamsAsFeature && (
         <div className="border-t border-border px-4 py-3">
           <p className="text-base font-semibold uppercase tracking-widest text-muted-foreground/50 mb-2">
@@ -202,7 +204,6 @@ function ArtistAnswerCard({ data, slug }: { data: any; slug: string | null }) {
         </div>
       )}
 
-      {/* Top songs */}
       {data.topSongs?.length > 0 && (
         <div className="border-t border-border">
           <p className="text-base font-semibold uppercase tracking-widest text-muted-foreground/50 px-4 pt-3 pb-1">
@@ -240,7 +241,6 @@ function ArtistAnswerCard({ data, slug }: { data: any; slug: string | null }) {
         </div>
       )}
 
-      {/* Chart history */}
       {data.charts?.length > 0 && (
         <div className="border-t border-border px-4 py-3">
           <p className="text-base font-semibold uppercase tracking-widest text-muted-foreground/50 mb-2">
@@ -270,7 +270,6 @@ function ArtistAnswerCard({ data, slug }: { data: any; slug: string | null }) {
         </div>
       )}
 
-      {/* Awards */}
       {data.awards?.length > 0 && (
         <div className="border-t border-border px-4 py-3">
           <p className="text-base font-semibold uppercase tracking-widest text-muted-foreground/50 mb-2">
@@ -294,7 +293,6 @@ function ArtistAnswerCard({ data, slug }: { data: any; slug: string | null }) {
         </div>
       )}
 
-      {/* Records */}
       {data.records?.length > 0 && (
         <div className="border-t border-border px-4 py-3">
           <p className="text-base font-semibold uppercase tracking-widest text-muted-foreground/50 mb-2">
@@ -321,7 +319,6 @@ function ArtistAnswerCard({ data, slug }: { data: any; slug: string | null }) {
         </div>
       )}
 
-      {/* Certifications */}
       {data.certifications?.length > 0 && (
         <div className="border-t border-border px-4 py-3">
           <p className="text-base font-semibold uppercase tracking-widest text-muted-foreground/50 mb-2">
@@ -344,78 +341,6 @@ function ArtistAnswerCard({ data, slug }: { data: any; slug: string | null }) {
           </div>
         </div>
       )}
-    </div>
-  );
-}
-
-// ── Ranked list (leaderboard / trending) ─────────────────────────────────────
-
-function RankedList({ items, toolUsed }: { items: any[]; toolUsed: string }) {
-  const isTrending = toolUsed.startsWith("get_trending");
-
-  return (
-    <div className="rounded-xl border border-border overflow-hidden bg-card mb-6">
-      {items.map((item: any, i: number) => (
-        <div
-          key={item.artistId ?? item.id ?? i}
-          className={`flex items-center gap-3 px-4 py-3 ${
-            i !== 0 ? "border-t border-border" : ""
-          }`}
-        >
-          <span className="text-sm text-muted-foreground/40 w-5 tabular-nums shrink-0">
-            {item.rank ?? i + 1}
-          </span>
-
-          {(item.artistImageUrl ?? item.imageUrl) && (
-            <div className="relative w-8 h-8 rounded-full overflow-hidden shrink-0 bg-muted">
-              <Image
-                src={item.artistImageUrl ?? item.imageUrl}
-                alt={item.artistName ?? item.name}
-                fill
-                sizes="32px"
-                className="object-cover"
-              />
-            </div>
-          )}
-
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-foreground truncate">
-              {item.artistName ?? item.name ?? item.title}
-            </p>
-            {item.originCountry && (
-              <p className="text-xs text-muted-foreground/50">
-                {item.originCountry}
-              </p>
-            )}
-          </div>
-
-          <div className="text-right shrink-0">
-            <p className="text-sm tabular-nums font-medium text-foreground">
-              {isTrending
-                ? item.dailyGrowth
-                  ? `+${formatNumber(Number(item.dailyGrowth))}`
-                  : "—"
-                : item.totalStreams
-                  ? formatNumber(Number(item.totalStreams))
-                  : item.monthlyListeners
-                    ? formatNumber(Number(item.monthlyListeners))
-                    : "—"}
-            </p>
-            <p className="text-xs text-muted-foreground/40">
-              {isTrending ? "daily growth" : "streams"}
-            </p>
-          </div>
-
-          {(item.artistSlug ?? item.slug) && (
-            <Link
-              href={`/artists/${item.artistSlug ?? item.slug}`}
-              className="text-xs text-primary hover:underline shrink-0"
-            >
-              →
-            </Link>
-          )}
-        </div>
-      ))}
     </div>
   );
 }

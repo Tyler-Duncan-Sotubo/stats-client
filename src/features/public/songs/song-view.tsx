@@ -134,14 +134,12 @@ export async function SongView({ song }: { song: PublicSong }) {
 
       {/* Content */}
       <div className="mt-8 grid gap-8 xl:grid-cols-[minmax(0,1fr)_400px]">
-        {/* Left */}
-        <div className="flex flex-col gap-8">
+        <div className="min-w-0 flex flex-col gap-8">
           {history.length > 0 && <SongSparkline history={history} />}
           <SongCharts charts={song.charts} />
         </div>
 
-        {/* Right */}
-        <div className="flex flex-col gap-6">
+        <div className="min-w-0 flex flex-col gap-6">
           <SongFeatures features={song.features} />
           {otherSongs.length > 0 && (
             <ArtistSongsList
