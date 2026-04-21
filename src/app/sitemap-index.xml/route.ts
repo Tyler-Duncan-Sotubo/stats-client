@@ -1,9 +1,8 @@
-// app/sitemap-index.xml/route.ts
 import { NextResponse } from "next/server";
 
 const BASE_URL = "https://tooxclusive.com/stats";
-const ARTIST_PAGES = 4; // 20k artists at 5k per page
-const SONG_PAGES = 100; // 1M songs at 10k per page
+const ARTIST_PAGES = 4;
+const SONG_PAGES = 100;
 
 export async function GET() {
   const now = new Date().toISOString();
@@ -32,11 +31,19 @@ export async function GET() {
     <lastmod>${now}</lastmod>
   </sitemap>`;
 
+  // ✅ NEW: compare sitemap
+  const compareSitemap = `
+  <sitemap>
+    <loc>${BASE_URL}/sitemaps/compare</loc>
+    <lastmod>${now}</lastmod>
+  </sitemap>`;
+
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${artistSitemaps}
 ${songSitemaps}
 ${milestoneSitemap}
+${compareSitemap}
 </sitemapindex>`;
 
   return new NextResponse(xml, {
