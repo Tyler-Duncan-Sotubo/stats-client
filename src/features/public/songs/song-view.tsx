@@ -9,6 +9,7 @@ import { SongSparkline } from "./song-sparkline";
 import { ArtistSongsList } from "./artist-songs-list";
 import { ChevronLeft } from "lucide-react";
 import { toTitleCase } from "@/shared/utils/format";
+import { SongSummary } from "./song-summary";
 
 export async function SongView({ song }: { song: PublicSong }) {
   const img = song.imageUrl ?? song.artistImageUrl;
@@ -130,7 +131,10 @@ export async function SongView({ song }: { song: PublicSong }) {
       </div>
 
       {/* Stat row */}
-      <SongStatRow song={song} />
+      <div className="space-y-3">
+        <SongSummary song={song} />
+        <SongStatRow song={song} />
+      </div>
 
       {/* Content */}
       <div className="mt-8 grid gap-8 xl:grid-cols-[minmax(0,1fr)_400px]">

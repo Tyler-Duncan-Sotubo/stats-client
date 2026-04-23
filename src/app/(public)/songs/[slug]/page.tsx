@@ -5,6 +5,7 @@ import type { Metadata } from "next";
 import Script from "next/script";
 import type { PublicSong } from "@/lib/api/public";
 import { getChartLabel } from "@/lib/constants/charts";
+import { buildSongSummary } from "@/features/public/songs/utils/song-summary";
 
 const BASE_URL = "https://tooxclusive.com/stats";
 
@@ -41,13 +42,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   const url = `${BASE_URL}/songs/${slug}`;
   const image = song.imageUrl ?? song.artistImageUrl ?? null;
+  const { metaDescription } = buildSongSummary(song);
 
   return {
     title,
-    description,
+    description: metaDescription || description,
     openGraph: {
       title,
-      description,
+      description: metaDescription || description,
       url,
       siteName: "TooXclusive Stats",
       type: "music.song",

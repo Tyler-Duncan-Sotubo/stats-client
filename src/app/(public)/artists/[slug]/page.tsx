@@ -6,6 +6,7 @@ import Script from "next/script";
 import type { PublicArtist } from "@/lib/api/public";
 import { getCountryName } from "@/shared/utils/get-country-name";
 import { getChartLabel } from "@/lib/constants/charts";
+import { buildArtistSummary } from "@/features/public/artist/utils/artist-summary";
 
 const BASE_URL = "https://tooxclusive.com/stats";
 
@@ -52,12 +53,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const url = `${BASE_URL}/artists/${slug}`;
   const image = artist.imageUrl ?? null;
 
+  const { metaDescription } = buildArtistSummary(artist);
+
   return {
     title,
-    description,
+    description: metaDescription ?? description,
     openGraph: {
       title,
-      description,
+      description: metaDescription ?? description,
       url,
       siteName: "TooXclusive Stats",
       type: "profile",
@@ -69,7 +72,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       card: "summary_large_image",
       site: "@tooxclusive",
       title,
-      description,
+      description: metaDescription ?? description,
       ...(image && { images: [image] }),
     },
     alternates: {
