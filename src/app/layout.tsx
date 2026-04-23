@@ -37,16 +37,16 @@ export default function RootLayout({
             <ScrollToTop />
             {/* Google Analytics */}
             <Script
-              src="https://www.googletagmanager.com/gtag/js?id=G-Z657KN1HMV"
+              src="https://www.googletagmanager.com/gtag/js?id=G-4YWCN1HRXE"
               strategy="afterInteractive"
             />
             <Script id="google-analytics" strategy="afterInteractive">
               {`
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-            gtag('config', 'G-Z657KN1HMV');
-          `}
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){dataLayer.push(arguments);}
+                gtag('js', new Date());
+                gtag('config', 'G-4YWCN1HRXE');
+              `}
             </Script>
             {children}
             <Toaster position="top-right" richColors />
