@@ -25,12 +25,23 @@ export async function generateMetadata({
   const question = reconstructQuestion(slug);
   const canonical = `${BASE_URL}/ask/${slug.join("/")}`;
 
+  let description = `Get the answer to "${toTitleCase(question)}" — African and Afrobeats music statistics powered by TooXclusive Stats.`;
+
+  try {
+    const result = await askQuestion(question);
+    if (result.answer && !result.answer.includes("couldn't find")) {
+      description = result.answer;
+    }
+  } catch {
+    // use default description
+  }
+
   return {
     title: `${toTitleCase(question)} — TooXclusive Stats`,
-    description: `Get the answer to "${toTitleCase(question)}" — African and Afrobeats music statistics powered by TooXclusive Stats.`,
+    description,
     openGraph: {
       title: `${toTitleCase(question)} — TooXclusive Stats`,
-      description: `Get the answer to "${toTitleCase(question)}" — African and Afrobeats music statistics powered by TooXclusive Stats.`,
+      description,
       url: canonical,
       siteName: "TooXclusive Stats",
       type: "website",
@@ -39,7 +50,7 @@ export async function generateMetadata({
       card: "summary_large_image",
       site: "@tooxclusive",
       title: `${toTitleCase(question)} — TooXclusive Stats`,
-      description: `Get the answer to "${toTitleCase(question)}" — African and Afrobeats music statistics.`,
+      description,
     },
     alternates: {
       canonical,
@@ -60,11 +71,15 @@ export default async function AskPage({ params }: AskPageProps) {
     getRecentQuestions(6),
   ]);
 
-  if (result.toolUsed === "get_artist:comparison") {
+  // ── Comparison redirect — updated for new toolUsed format ──
+  if (
+    result.toolUsed === "comparison" ||
+    result.toolUsed === "get_artist:comparison"
+  ) {
     const left = result.data?.artist1?.slug;
     const right = result.data?.artist2?.slug;
     if (left && right) {
-      redirect(`/compare?left=${left}&right=${right}`);
+      redirect(`/compare/${left}-vs-${right}`);
     }
   }
 

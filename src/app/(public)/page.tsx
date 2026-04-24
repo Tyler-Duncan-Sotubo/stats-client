@@ -73,7 +73,7 @@ export default async function HomePage() {
     getTrendingSongs({ limit: 20, isAfrobeats: true }),
     getChart("tooxclusive_top_100", "NG", 20),
     getTrendingArtists({ limit: 20 }),
-    getStreamLeaderboard({ limit: 1, country: "NG" }),
+    getStreamLeaderboard({ limit: 1 }),
     getListenerLeaderboard({ limit: 10, country: "NG" }),
     getArtist("wizkid"),
     getArtist("davido"),

@@ -27,7 +27,7 @@ export function MostStreamedCard({ artist }: MostStreamedCardProps) {
 
   return (
     <StatCard
-      label="Most Streamed Afrobeats Artist"
+      label="Most Streamed Artist"
       value={artist?.totalStreams ? formatNumber(artist.totalStreams) : "—"}
       lines={
         [

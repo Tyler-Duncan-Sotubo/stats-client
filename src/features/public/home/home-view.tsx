@@ -64,10 +64,10 @@ export function HomeView({
           <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
             <div className="flex flex-col gap-5">
               <AfrobeatsChartCard tooxclusive={tooxclusive} />
-              <MostStreamedCard artist={topStreamedArtist} />
+              <TrendingSongCard songs={songs} />
             </div>
             <div className="flex flex-col gap-5">
-              <TrendingSongCard songs={songs} />
+              <MostStreamedCard artist={topStreamedArtist} />
               <MostListenersCard artist={topListenerArtist} />
             </div>
           </div>
