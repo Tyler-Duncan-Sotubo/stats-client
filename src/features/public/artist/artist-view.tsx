@@ -9,6 +9,7 @@ import { ArtistCertifications } from "./artist-certifications";
 import { ArtistRecords } from "./artist-records";
 import { ArtistSparkline } from "./artist-sparkline";
 import { ArtistRelatedSearches } from "./artist-related-search";
+import { ArtistAudiomackStats } from "./artist-audiomack-stats";
 
 interface ArtistViewProps {
   artist: PublicArtist;
@@ -24,7 +25,7 @@ export function ArtistView({ artist, history }: ArtistViewProps) {
           <ArtistSummary artist={artist} />
           <ArtistStatRow artist={artist} />
         </div>
-        <div className="mt-8 grid gap-8 grid-cols-1 xl:grid-cols-[minmax(0,1fr)_340px]">
+        <div className="mt-8 grid gap-8 grid-cols-1 xl:grid-cols-[minmax(0,1fr)_400px]">
           <div className="min-w-0 flex flex-col gap-8">
             {history.length > 0 && <ArtistSparkline history={history} />}
 
@@ -34,6 +35,9 @@ export function ArtistView({ artist, history }: ArtistViewProps) {
             <ArtistCharts charts={artist.charts} />
           </div>
           <div className="min-w-0 flex flex-col gap-6">
+            {artist.audiomackStats && (
+              <ArtistAudiomackStats stats={artist.audiomackStats} />
+            )}
             <ArtistCertifications certifications={artist.certifications} />
             <ArtistRecords records={artist.records} />
             <ArtistAwards awards={artist.awards} />

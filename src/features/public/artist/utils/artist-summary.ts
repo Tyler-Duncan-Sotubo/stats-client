@@ -2,6 +2,13 @@ import type { PublicArtist } from "@/lib/api/public";
 import { getCountryName } from "@/shared/utils/get-country-name";
 import { getChartLabel } from "@/lib/constants/charts";
 
+function formatAudiomackPlays(n: number): string {
+  if (n >= 1e9) return `${(n / 1e9).toFixed(1)}B`;
+  if (n >= 1e6) return `${(n / 1e6).toFixed(0)}M`;
+  if (n >= 1e3) return `${(n / 1e3).toFixed(0)}K`;
+  return n.toString();
+}
+
 export function buildArtistSummary(artist: PublicArtist) {
   const country = artist.originCountry
     ? getCountryName(artist.originCountry)
@@ -38,6 +45,8 @@ export function buildArtistSummary(artist: PublicArtist) {
 
   const intro = introParts.join(" ").trim() + ".";
 
+  const audiomack = artist.audiomackStats;
+
   // Highlights — each is independently optional
   const highlights = [
     topSong?.title && topSong?.totalStreams && Number(topSong.totalStreams) > 0
@@ -52,6 +61,10 @@ export function buildArtistSummary(artist: PublicArtist) {
       ? wonAwards.length === 1
         ? `${artist.name} won the ${wonAwards[0].awardName} at the ${wonAwards[0].awardBody}.`
         : `${artist.name} has won ${wonAwards.length} awards including the ${wonAwards[0].awardName} at the ${wonAwards[0].awardBody}.`
+      : null,
+    // ← add this
+    audiomack?.totalPlays && Number(audiomack.totalPlays) > 0
+      ? `${artist.name} has ${formatAudiomackPlays(Number(audiomack.totalPlays))} plays on Audiomack with ${(Number(audiomack.followers) / 1e6).toFixed(1)}M followers.`
       : null,
   ].filter(Boolean) as string[];
 

@@ -335,6 +335,7 @@ export interface PublicArtist {
   awards: ArtistAward[];
   topSongs: ArtistSong[];
   awardsSummary: ArtistAwardsSummary;
+  audiomackStats: AudiomackStats | null;
 }
 
 export interface ArtistAwardsSummary {
@@ -342,6 +343,14 @@ export interface ArtistAwardsSummary {
   totalNominations: number;
   grammyWins: number;
   grammyNominations: number;
+}
+
+export interface AudiomackStats {
+  audiomackSlug: string;
+  snapshotDate: string;
+  totalPlays: string;
+  monthlyPlays: string;
+  followers: string;
 }
 
 export interface ArtistCertification {
