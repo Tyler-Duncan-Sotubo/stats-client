@@ -31,10 +31,15 @@ export async function GET() {
     <lastmod>${now}</lastmod>
   </sitemap>`;
 
-  // ✅ NEW: compare sitemap
   const compareSitemap = `
   <sitemap>
     <loc>${BASE_URL}/sitemaps/compare</loc>
+    <lastmod>${now}</lastmod>
+  </sitemap>`;
+
+  const rankingSitemap = `
+  <sitemap>
+    <loc>${BASE_URL}/sitemaps/rankings</loc>
     <lastmod>${now}</lastmod>
   </sitemap>`;
 
@@ -44,6 +49,7 @@ ${artistSitemaps}
 ${songSitemaps}
 ${milestoneSitemap}
 ${compareSitemap}
+${rankingSitemap}
 </sitemapindex>`;
 
   return new NextResponse(xml, {

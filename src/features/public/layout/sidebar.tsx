@@ -10,6 +10,7 @@ import {
   Music,
   Megaphone,
   Medal,
+  ListOrdered,
 } from "lucide-react";
 
 import { SidebarLink } from "./sidebar-link";
@@ -32,7 +33,7 @@ export function Sidebar({ charts }: { charts: AvailableChart[] }) {
                 Home
               </SidebarLink>
               <SidebarLink href="/leaderboard">
-                <Trophy className="w-4.5 h-4.5 mr-2 shrink-0" />
+                <ListOrdered className="w-4.5 h-4.5 mr-2 shrink-0" />
                 Leaderboards
               </SidebarLink>
             </div>
@@ -55,6 +56,10 @@ export function Sidebar({ charts }: { charts: AvailableChart[] }) {
               <SidebarLink href="/milestones">
                 <Medal className="w-4.5 h-4.5 mr-2 shrink-0" />
                 Milestones
+              </SidebarLink>
+              <SidebarLink href="/rankings">
+                <Trophy className="w-4.5 h-4.5 mr-2 shrink-0" />
+                Rankings
               </SidebarLink>
             </div>
           </div>

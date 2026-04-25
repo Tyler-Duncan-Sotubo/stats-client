@@ -14,6 +14,7 @@ import {
   ChevronDown,
   ChevronRight,
   Medal,
+  ListOrdered,
 } from "lucide-react";
 import {
   Sheet,
@@ -113,7 +114,7 @@ export function MobileNav({ charts }: { charts: AvailableChart[] }) {
               <TrendingUp className="w-4 h-4 shrink-0" /> Home
             </NavLink>
             <NavLink href="/leaderboard" onClick={close}>
-              <Trophy className="w-4 h-4 shrink-0" /> Leaderboards
+              <ListOrdered className="w-4 h-4 shrink-0" /> Leaderboards
             </NavLink>
           </div>
 
@@ -129,6 +130,9 @@ export function MobileNav({ charts }: { charts: AvailableChart[] }) {
             </NavLink>
             <NavLink href="/milestones" onClick={close}>
               <Medal className="w-4 h-4 shrink-0" /> Milestones
+            </NavLink>
+            <NavLink href="/rankings" onClick={close}>
+              <Trophy className="w-4 h-4 shrink-0" /> Rankings
             </NavLink>
           </div>
 

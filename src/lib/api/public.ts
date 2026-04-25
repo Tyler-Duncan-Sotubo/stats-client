@@ -283,7 +283,30 @@ export function getTrendingArtistsCached(
   );
 }
 
+// Ranking ─────────────────────────────────────────────────────────────────────
+
+export function getArtistSongRanking(slug: string, revalidate = 86400) {
+  return embedFetch<ArtistSongRankingResponse>(
+    `/api/public/rankings/${slug}`,
+    revalidate,
+  );
+}
+
 // ── Types ─────────────────────────────────────────────────────────────────────
+
+export interface ArtistSongRankingResponse {
+  data: ArtistSong[];
+  meta: {
+    artistSlug: string;
+    artistName: string;
+    artistImage: string | null;
+    limit: number;
+    metric: string;
+    total: number;
+    slug: string;
+    generatedAt: string;
+  };
+}
 
 export interface ArtistBrowseParams {
   limit?: number;
