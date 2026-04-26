@@ -20,33 +20,47 @@ function getBgForQuestion(question: string): string {
   return BG_COLORS[Math.abs(hash) % BG_COLORS.length];
 }
 
-/* ── NEW: answer formatter ───────────────────────── */
+function formatCount(value: number): string {
+  if (value >= 1_000_000_000) {
+    return `${(value / 1_000_000_000).toFixed(1)}B`;
+  }
+  if (value >= 1_000_000) {
+    return `${(value / 1_000_000).toFixed(1)}M`;
+  }
+  if (value >= 1_000) {
+    return `${(value / 1_000).toFixed(1)}K`;
+  }
+  return value.toString();
+}
+
+function formatNumbersInText(text: string): string {
+  // Match numbers with optional comma separators e.g. 91,107,250
+  return text.replace(/\b(\d{1,3}(?:,\d{3})+|\d{4,})\b/g, (match) => {
+    const num = parseInt(match.replace(/,/g, ""), 10);
+    return formatCount(num);
+  });
+}
 
 function formatHeroAnswer(answer: string): string {
   const lower = answer.toLowerCase();
 
-  // handle leaderboard-style answers
   if (lower.includes("top 10")) {
     const match = answer.match(/1\.\s([^,(]+).*?\(([\d,]+)\)/);
 
-    // if we can extract #1 → show clean insight
     if (match) {
       const name = match[1];
-      const streams = match[2];
-      return `${name} leads with ${streams} Spotify streams.`;
+      const rawStreams = parseInt(match[2].replace(/,/g, ""), 10);
+      return `${name} leads with ${formatCount(rawStreams)} Spotify streams.`;
     }
 
-    // fallback truncate
     const parts = answer.split(",");
     if (parts.length > 3) {
-      return parts.slice(0, 3).join(", ") + "…";
+      return formatNumbersInText(parts.slice(0, 3).join(", ")) + "…";
     }
   }
 
-  return answer;
+  return formatNumbersInText(answer);
 }
-
-/* ───────────────────────────────────────────────── */
 
 interface AnswerHeroProps {
   question: string;
