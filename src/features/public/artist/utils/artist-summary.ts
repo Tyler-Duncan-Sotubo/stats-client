@@ -9,6 +9,12 @@ function formatAudiomackPlays(n: number): string {
   return n.toString();
 }
 
+function formatListeners(n: number): string {
+  if (n >= 1e6) return `${(n / 1e6).toFixed(1)}M`;
+  if (n >= 1e3) return `${(n / 1e3).toFixed(0)}K`;
+  return n.toString();
+}
+
 export function buildArtistSummary(artist: PublicArtist) {
   const country = artist.originCountry
     ? getCountryName(artist.originCountry)
@@ -32,6 +38,8 @@ export function buildArtistSummary(artist: PublicArtist) {
     .filter((a) => a.result === "won")
     .sort((a, b) => b.year - a.year);
 
+  const rankContext = artist.rankContext;
+
   // Intro — minimum is just the name
   const introParts = [
     `${artist.name}${country ? ` is an artist from ${country}` : " is a recording artist"}`,
@@ -47,8 +55,36 @@ export function buildArtistSummary(artist: PublicArtist) {
 
   const audiomack = artist.audiomackStats;
 
+  // Rank context sentence
+  const rankSentence = (() => {
+    if (!rankContext?.listenerRank) return null;
+
+    const parts = [
+      `${artist.name} is currently ranked #${rankContext.listenerRank} globally on Spotify`,
+    ];
+
+    if (
+      rankContext.dailyListenersChange &&
+      rankContext.dailyListenersChange !== 0
+    ) {
+      const gained = rankContext.dailyListenersChange > 0;
+      parts.push(
+        `${gained ? "gaining" : "losing"} ${formatListeners(Math.abs(rankContext.dailyListenersChange))} listeners yesterday`,
+      );
+    }
+
+    if (rankContext.artistAbove && rankContext.artistBelow) {
+      parts.push(
+        `ranking above ${rankContext.artistBelow.name} but below ${rankContext.artistAbove.name} this week`,
+      );
+    }
+
+    return parts.join(" — ") + ".";
+  })();
+
   // Highlights — each is independently optional
   const highlights = [
+    rankSentence,
     topSong?.title && topSong?.totalStreams && Number(topSong.totalStreams) > 0
       ? Number(topSong.totalStreams) >= 1e9
         ? `${artist.name}'s most streamed song is "${topSong.title}", with over ${(Number(topSong.totalStreams) / 1e9).toFixed(1)}B streams.`
@@ -62,13 +98,11 @@ export function buildArtistSummary(artist: PublicArtist) {
         ? `${artist.name} won the ${wonAwards[0].awardName} at the ${wonAwards[0].awardBody}.`
         : `${artist.name} has won ${wonAwards.length} awards including the ${wonAwards[0].awardName} at the ${wonAwards[0].awardBody}.`
       : null,
-    // ← add this
     audiomack?.totalPlays && Number(audiomack.totalPlays) > 0
       ? `${artist.name} has ${formatAudiomackPlays(Number(audiomack.totalPlays))} plays on Audiomack with ${(Number(audiomack.followers) / 1e6).toFixed(1)}M followers.`
       : null,
   ].filter(Boolean) as string[];
 
-  // If we have nothing useful beyond the name, return null signals
   const hasContent =
     artist.totalStreams || artist.monthlyListeners || highlights.length > 0;
 

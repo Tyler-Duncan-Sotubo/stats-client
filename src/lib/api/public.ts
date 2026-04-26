@@ -359,6 +359,7 @@ export interface PublicArtist {
   topSongs: ArtistSong[];
   awardsSummary: ArtistAwardsSummary;
   audiomackStats: AudiomackStats | null;
+  rankContext: any;
 }
 
 export interface ArtistAwardsSummary {
