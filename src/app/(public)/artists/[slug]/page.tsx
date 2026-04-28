@@ -14,6 +14,21 @@ interface Props {
   params: Promise<{ slug: string }>;
 }
 
+async function checkTooxclusiveExists(slug: string): Promise<boolean> {
+  try {
+    const res = await fetch(
+      `https://tooxclusive.com/wp-json/toox/v1/artist-exists?slug=${slug}`,
+      {
+        next: { revalidate: 86400 }, // cache 24 hours
+      },
+    );
+    const data = await res.json();
+    return data.exists === true;
+  } catch {
+    return false;
+  }
+}
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
 
@@ -168,15 +183,24 @@ export default async function ArtistPage({ params }: Props) {
   const { slug } = await params;
 
   try {
-    const [artist, history] = await Promise.all([
+    const [artist, history, tooxclusiveExists] = await Promise.all([
       getArtist(slug),
       getArtistHistory(slug).catch(() => []),
+      checkTooxclusiveExists(slug),
     ]);
+
+    const tooxclusiveUrl = tooxclusiveExists
+      ? `https://tooxclusive.com/artists/${slug}/`
+      : null;
 
     return (
       <>
         <ArtistSchema artist={artist} />
-        <ArtistView artist={artist} history={history} />
+        <ArtistView
+          artist={artist}
+          history={history}
+          tooxclusiveUrl={tooxclusiveUrl}
+        />
       </>
     );
   } catch {

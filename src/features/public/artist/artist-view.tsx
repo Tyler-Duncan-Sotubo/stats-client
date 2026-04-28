@@ -14,12 +14,17 @@ import { ArtistAudiomackStats } from "./artist-audiomack-stats";
 interface ArtistViewProps {
   artist: PublicArtist;
   history: ArtistHistoryPoint[];
+  tooxclusiveUrl: string | null; // add this
 }
 
-export function ArtistView({ artist, history }: ArtistViewProps) {
+export function ArtistView({
+  artist,
+  history,
+  tooxclusiveUrl,
+}: ArtistViewProps) {
   return (
     <div className="pb-16">
-      <ArtistHero artist={artist} />
+      <ArtistHero artist={artist} tooxclusiveUrl={tooxclusiveUrl} />
       <div>
         <div className="space-y-3">
           <ArtistSummary artist={artist} />
