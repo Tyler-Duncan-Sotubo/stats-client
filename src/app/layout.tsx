@@ -50,31 +50,38 @@ export default function RootLayout({
             </Script>
             {/* Vignette — 1 per session only */}
             <Script id="vignette-ad" strategy="afterInteractive">{`
-              (function() {
-                var SESSION_KEY = 'ac_vignette_shown';
-                function hasShownThisSession() {
-                  try {
-                    return sessionStorage.getItem(SESSION_KEY) === '1';
-                  } catch(e) { return false; }
-                }
-                function markShown() {
-                  try {
-                    sessionStorage.setItem(SESSION_KEY, '1');
-                  } catch(e) {}
-                }
-                function loadVignette() {
-                  var s = document.createElement('script');
-                  s.dataset.zone = '7804350';
-                  s.src = 'https://n6wxm.com/vignette.min.js';
-                  s.async = true;
-                  (document.body || document.documentElement).appendChild(s);
-                  markShown();
-                }
-                if (!hasShownThisSession()) {
-                  loadVignette();
-                }
-              })();
-            `}</Script>
+  (function() {
+    var SESSION_KEY = 'ac_vignette_shown';
+    
+    function hasShownThisSession() {
+      try {
+        return sessionStorage.getItem(SESSION_KEY) === '1';
+      } catch(e) { return false; }
+    }
+
+    function markShown() {
+      try {
+        sessionStorage.setItem(SESSION_KEY, '1');
+      } catch(e) {}
+    }
+
+    function loadVignette() {
+      var s = document.createElement('script');
+      s.dataset.zone = '7804350';
+      s.src = 'https://n6wxm.com/vignette.min.js';
+      s.async = true;
+      s.onload = function() {
+        // Only mark shown AFTER script actually loads
+        markShown();
+      };
+      (document.body || document.documentElement).appendChild(s);
+    }
+
+    if (!hasShownThisSession()) {
+      loadVignette();
+    }
+  })();
+`}</Script>
             {children}
             <Toaster position="top-right" richColors />
           </QueryProvider>
