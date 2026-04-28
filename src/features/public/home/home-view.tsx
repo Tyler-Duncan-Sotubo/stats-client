@@ -161,9 +161,7 @@ export function HomeView({
         </div>
 
         {/* Right — banner, sticky */}
-        <div>
-          <GriotBanner />
-        </div>
+        <div></div>
       </div>
     </div>
   );
