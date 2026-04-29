@@ -3,6 +3,7 @@ import Image from "next/image";
 import { formatNumber, toTitleCase } from "@/shared/utils/format";
 import { MilestonePagination } from "./milestone-pagination";
 import type { MilestoneSongResponse } from "@/lib/api/public";
+import { MilestoneSongSummary } from "./milestone-song-summary";
 
 interface Props {
   result: MilestoneSongResponse;
@@ -30,6 +31,8 @@ export function MilestoneSongView({ result, tier, label }: Props) {
           {meta.totalPages}
         </p>
       </div>
+
+      <MilestoneSongSummary data={data} meta={meta} label={label} />
 
       <div className="rounded-xl border border-border overflow-hidden bg-card">
         <table className="w-full text-sm">

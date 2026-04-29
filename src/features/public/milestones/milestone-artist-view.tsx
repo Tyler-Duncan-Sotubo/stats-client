@@ -4,6 +4,7 @@ import { formatNumber } from "@/shared/utils/format";
 import { getCountryName } from "@/shared/utils/get-country-name";
 import { MilestonePagination } from "./milestone-pagination";
 import type { MilestoneArtistResponse } from "@/lib/api/public";
+import { MilestoneArtistSummary } from "./milestone-artist-summary";
 
 interface Props {
   result: MilestoneArtistResponse;
@@ -41,6 +42,13 @@ export function MilestoneArtistView({
           {meta.totalPages}
         </p>
       </div>
+
+      <MilestoneArtistSummary
+        data={data}
+        meta={meta}
+        label={label}
+        isAfrobeats={isAfrobeats}
+      />
 
       <div className="rounded-xl border border-border overflow-hidden bg-card">
         <table className="w-full text-sm">
