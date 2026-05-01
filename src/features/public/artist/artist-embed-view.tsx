@@ -25,19 +25,11 @@ export function ArtistEmbedView({ artist }: Props) {
 
   return (
     <div className="flex flex-col">
+      <p className="text-3xl font-semibold px-4 py-2">
+        See Stats From {artist.name}
+      </p>
       {/* Hero */}
-      <div className="relative h-28 w-full overflow-hidden bg-muted">
-        {artist.imageUrl && (
-          <Image
-            src={artist.imageUrl}
-            alt={artist.name}
-            fill
-            sizes="400px"
-            className="object-cover object-top opacity-30"
-          />
-        )}
-        <div className="absolute inset-0 bg-linear-to-t from-background to-transparent" />
-
+      <div className="relative h-20 w-full overflow-hidden bg-muted">
         {/* Artist info over hero */}
         <div className="absolute bottom-3 left-4 flex items-end gap-3">
           <div className="relative w-14 h-14 rounded-xl overflow-hidden bg-muted shrink-0 border-2 border-border shadow-lg">
@@ -116,24 +108,30 @@ export function ArtistEmbedView({ artist }: Props) {
                 i !== 0 ? "border-t border-border" : ""
               }`}
             >
-              <span className="text-xs text-muted-foreground/40 w-4 tabular-nums shrink-0">
+              <span className="text-base text-muted-foreground/40 w-4 tabular-nums shrink-0">
                 {i + 1}
               </span>
-              {song.imageUrl && (
-                <div className="relative w-7 h-7 rounded overflow-hidden shrink-0 bg-muted">
+              <div className="relative w-10 h-10 rounded overflow-hidden shrink-0 bg-muted border border-border">
+                {song.imageUrl ? (
                   <Image
                     src={song.imageUrl}
                     alt={song.title}
                     fill
-                    sizes="28px"
+                    sizes="45px"
                     className="object-cover"
                   />
-                </div>
-              )}
-              <p className="text-xs font-medium text-foreground truncate flex-1">
+                ) : (
+                  <div className="flex h-full w-full items-center justify-center">
+                    <span className="text-[10px] font-black text-foreground uppercase">
+                      {song.title.slice(0, 2)}
+                    </span>
+                  </div>
+                )}
+              </div>
+              <p className="text-base font-bold text-foreground truncate flex-1">
                 {toTitleCase(song.title)}
               </p>
-              <p className="text-xs tabular-nums text-muted-foreground shrink-0">
+              <p className="text-base tabular-nums text-muted-foreground shrink-0 font-bold">
                 {song.totalStreams
                   ? formatNumber(Number(song.totalStreams))
                   : "—"}
@@ -146,19 +144,19 @@ export function ArtistEmbedView({ artist }: Props) {
       {/* Best chart */}
       {topChart && (
         <div className="px-4 py-2.5 border-b border-border flex items-center justify-between">
-          <p className="text-xs text-muted-foreground/50 truncate">
+          <p className="text-base text-muted-foreground/50 truncate">
             {CHART_LABELS[topChart.chartName] ??
               topChart.chartName.replace(/_/g, " ")}
           </p>
           <div className="flex items-center gap-3 shrink-0">
-            <p className="text-xs text-muted-foreground">
+            <p className="text-base text-muted-foreground">
               Peak{" "}
               <span className="font-bold text-foreground">
                 #{topChart.bestPeakPosition ?? "—"}
               </span>
             </p>
             {Number(topChart.weeksAtNumber1) > 0 && (
-              <p className="text-xs text-muted-foreground">
+              <p className="text-base text-muted-foreground">
                 <span className="font-bold text-primary">
                   {topChart.weeksAtNumber1}
                 </span>{" "}
