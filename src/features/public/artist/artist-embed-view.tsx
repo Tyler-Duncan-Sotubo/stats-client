@@ -1,4 +1,3 @@
-// features/public/artist/artist-embed-view.tsx
 import Image from "next/image";
 import { formatNumber } from "@/shared/utils/format";
 import { toTitleCase } from "@/shared/utils/format";
@@ -25,7 +24,7 @@ export function ArtistEmbedView({ artist }: Props) {
 
   return (
     <div className="flex flex-col">
-      <p className="text-lg font-semibold px-4 py-2">
+      <p className="text-base font-bold px-4 py-2">
         See Stats From {artist.name}
       </p>
       {/* Hero */}
@@ -102,9 +101,16 @@ export function ArtistEmbedView({ artist }: Props) {
             Top Songs
           </p>
           {topSongs.map((song, i) => (
-            <div
+            <a
               key={song.id}
-              className={`flex items-center gap-3 px-4 py-2 ${
+              href={
+                song.slug
+                  ? `${BASE_URL}/songs/${song.slug}`
+                  : `${BASE_URL}/artists/${artist.slug}`
+              }
+              target="_blank"
+              rel="noopener noreferrer"
+              className={`flex items-center gap-3 px-4 py-2 hover:bg-muted/50 transition-colors ${
                 i !== 0 ? "border-t border-border" : ""
               }`}
             >
@@ -136,7 +142,7 @@ export function ArtistEmbedView({ artist }: Props) {
                   ? formatNumber(Number(song.totalStreams))
                   : "—"}
               </p>
-            </div>
+            </a>
           ))}
         </div>
       )}
