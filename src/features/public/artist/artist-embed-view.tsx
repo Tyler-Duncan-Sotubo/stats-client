@@ -25,7 +25,7 @@ export function ArtistEmbedView({ artist }: Props) {
 
   return (
     <div className="flex flex-col">
-      <p className="text-3xl font-semibold px-4 py-2">
+      <p className="text-xl font-semibold px-4 py-2">
         See Stats From {artist.name}
       </p>
       {/* Hero */}
@@ -108,7 +108,7 @@ export function ArtistEmbedView({ artist }: Props) {
                 i !== 0 ? "border-t border-border" : ""
               }`}
             >
-              <span className="text-base text-muted-foreground/40 w-4 tabular-nums shrink-0">
+              <span className="text-sm text-muted-foreground/40 w-4 tabular-nums shrink-0">
                 {i + 1}
               </span>
               <div className="relative w-10 h-10 rounded overflow-hidden shrink-0 bg-muted border border-border">
@@ -122,16 +122,16 @@ export function ArtistEmbedView({ artist }: Props) {
                   />
                 ) : (
                   <div className="flex h-full w-full items-center justify-center">
-                    <span className="text-[10px] font-black text-foreground uppercase">
+                    <span className="text-[9px] font-black text-foreground uppercase">
                       {song.title.slice(0, 2)}
                     </span>
                   </div>
                 )}
               </div>
-              <p className="text-base font-bold text-foreground truncate flex-1">
+              <p className="text-sm font-bold text-foreground truncate flex-1">
                 {toTitleCase(song.title)}
               </p>
-              <p className="text-base tabular-nums text-muted-foreground shrink-0 font-bold">
+              <p className="text-sm tabular-nums text-muted-foreground shrink-0 font-bold">
                 {song.totalStreams
                   ? formatNumber(Number(song.totalStreams))
                   : "—"}
@@ -144,19 +144,19 @@ export function ArtistEmbedView({ artist }: Props) {
       {/* Best chart */}
       {topChart && (
         <div className="px-4 py-2.5 border-b border-border flex items-center justify-between">
-          <p className="text-base text-muted-foreground/50 truncate">
+          <p className="text-sm text-muted-foreground/50 truncate">
             {CHART_LABELS[topChart.chartName] ??
               topChart.chartName.replace(/_/g, " ")}
           </p>
           <div className="flex items-center gap-3 shrink-0">
-            <p className="text-base text-muted-foreground">
+            <p className="text-sm text-muted-foreground">
               Peak{" "}
               <span className="font-bold text-foreground">
                 #{topChart.bestPeakPosition ?? "—"}
               </span>
             </p>
             {Number(topChart.weeksAtNumber1) > 0 && (
-              <p className="text-base text-muted-foreground">
+              <p className="text-sm text-muted-foreground">
                 <span className="font-bold text-primary">
                   {topChart.weeksAtNumber1}
                 </span>{" "}
