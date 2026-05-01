@@ -25,7 +25,7 @@ export function ArtistEmbedView({ artist }: Props) {
 
   return (
     <div className="flex flex-col">
-      <p className="text-xl font-semibold px-4 py-2">
+      <p className="text-lg font-semibold px-4 py-2">
         See Stats From {artist.name}
       </p>
       {/* Hero */}
