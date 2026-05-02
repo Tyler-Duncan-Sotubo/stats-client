@@ -35,17 +35,19 @@ export default function RootLayout({
         <NextAuthProvider>
           <QueryProvider>
             <ScrollToTop />
-            {/* Google Analytics */}
+            {/* Google Analytics — skip if loaded in iframe */}
             <Script
               src="https://www.googletagmanager.com/gtag/js?id=G-4YWCN1HRXE"
               strategy="afterInteractive"
             />
             <Script id="google-analytics" strategy="afterInteractive">
               {`
-                window.dataLayer = window.dataLayer || [];
-                function gtag(){dataLayer.push(arguments);}
-                gtag('js', new Date());
-                gtag('config', 'G-4YWCN1HRXE');
+                if (window.self === window.top) {
+                  window.dataLayer = window.dataLayer || [];
+                  function gtag(){dataLayer.push(arguments);}
+                  gtag('js', new Date());
+                  gtag('config', 'G-4YWCN1HRXE');
+                }
               `}
             </Script>
             {children}
