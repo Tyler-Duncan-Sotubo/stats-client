@@ -14,7 +14,6 @@ import {
   EntryImage,
   ChartEntryRow,
 } from "@/shared/ui/chart-entry-row";
-import { GriotBanner } from "../layout/griot-banner";
 
 function formatWeeks(days: number | null): string {
   if (!days) return "—";
@@ -155,9 +154,7 @@ export function ChartDetailView({ data }: { data: ChartResponse }) {
           />
         </div>
       </div>
-      <div className="mt-16">
-        <GriotBanner />
-      </div>
+      <div className="mt-16"></div>
     </section>
   );
 }

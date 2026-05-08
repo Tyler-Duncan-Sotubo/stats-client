@@ -21,7 +21,6 @@ import type {
   LeaderboardEntry,
   PublicArtist,
 } from "@/lib/api/public";
-import { GriotBanner } from "../layout/griot-banner";
 
 type SongTab = "top20" | "trending";
 

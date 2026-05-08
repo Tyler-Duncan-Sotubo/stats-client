@@ -4,7 +4,6 @@ import type { AskResult, AskQuestion } from "@/lib/api/public";
 import { formatNumber } from "@/shared/utils/format";
 import { AnswerHero } from "./answer-hero";
 import { QuestionGroup } from "./question-group";
-import { GriotBanner } from "../layout/griot-banner";
 import { ChartList } from "./chart-list";
 import { ArtistRankedList } from "./artist-ranked-list";
 import { SongRankedList } from "./song-ranked-list";
@@ -91,9 +90,7 @@ export function AskView({ question, result, popular, recent }: AskViewProps) {
         </div>
       </div>
 
-      <aside className="hidden xl:block space-y-6 pb-10">
-        <GriotBanner />
-      </aside>
+      <aside className="hidden xl:block space-y-6 pb-10"></aside>
     </section>
   );
 }
