@@ -292,6 +292,33 @@ export function getArtistSongRanking(slug: string, revalidate = 86400) {
   );
 }
 
+// ── Albums ────────────────────────────────────────────────────────────────────
+
+export function getAlbum(slug: string) {
+  return apiFetch<FullAlbum>(`/api/public/albums/${slug}`);
+}
+
+export function getAlbums(params?: AlbumBrowseParams) {
+  const q = buildQuery({
+    limit: params?.limit,
+    page: params?.page,
+    isAfrobeats: params?.isAfrobeats,
+    albumType: params?.albumType,
+    sortBy: params?.sortBy,
+  });
+  return apiFetch<AlbumBrowseResponse>(`/api/public/albums?${q}`);
+}
+
+export function getIndexableAlbums(limit: number, offset: number) {
+  return apiFetch<{ slug: string; updatedAt: string }[]>(
+    `/api/public/albums/indexable?limit=${limit}&offset=${offset}`,
+  );
+}
+
+export function getAlbumCached(slug: string, revalidate = 3600) {
+  return embedFetch<FullAlbum>(`/api/public/albums/${slug}`, revalidate);
+}
+
 // ── Types ─────────────────────────────────────────────────────────────────────
 
 export interface ArtistSongRankingResponse {
@@ -702,4 +729,61 @@ export interface IndexableQuestion {
   slug: string;
   updatedAt: string;
   question: string;
+}
+
+// ── Album types ───────────────────────────────────────────────────────────────
+
+export interface AlbumBrowseParams {
+  limit?: number;
+  page?: number;
+  isAfrobeats?: boolean;
+  albumType?: string;
+  sortBy?: "totalStreams" | "releaseDate" | "dailyStreams";
+}
+
+export interface AlbumBrowseResponse {
+  data: PublicAlbum[];
+  meta: { total: number; page: number; limit: number; totalPages: number };
+}
+
+export interface PublicAlbum {
+  id: string;
+  title: string;
+  slug: string;
+  imageUrl: string | null;
+  releaseDate: string | null;
+  albumType: string;
+  totalTracks: number | null;
+  spotifyAlbumId: string;
+  isAfrobeats: boolean;
+  artistId: string;
+  artistName: string;
+  artistSlug: string;
+  artistImageUrl: string | null;
+  totalStreams: number | null;
+  dailyStreams: number | null;
+}
+
+export interface PublicAlbumTrack {
+  id: string;
+  title: string;
+  slug: string | null;
+  trackNumber: number | null;
+  spotifyTrackId: string | null;
+  imageUrl: string | null;
+  explicit: boolean;
+  durationMs: number | null;
+  releaseDate: string | null;
+  totalStreams: number | null;
+  dailyStreams: number | null;
+  featuredArtists: {
+    id: string;
+    name: string;
+    slug: string | null;
+  }[];
+}
+
+export interface FullAlbum {
+  album: PublicAlbum;
+  tracklist: PublicAlbumTrack[];
 }

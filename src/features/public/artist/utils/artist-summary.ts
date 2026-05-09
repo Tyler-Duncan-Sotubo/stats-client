@@ -40,7 +40,6 @@ export function buildArtistSummary(artist: PublicArtist) {
 
   const rankContext = artist.rankContext;
 
-  // Intro — minimum is just the name
   const introParts = [
     `${artist.name}${country ? ` is an artist from ${country}` : " is a recording artist"}`,
     artist.totalStreams && Number(artist.totalStreams) > 0
@@ -55,8 +54,28 @@ export function buildArtistSummary(artist: PublicArtist) {
 
   const audiomack = artist.audiomackStats;
 
-  // Rank context sentence
-  const rankSentence = (() => {
+  // Structured rank context — returned separately so components can render links
+  const rankContextStructured = rankContext?.listenerRank
+    ? {
+        listenerRank: rankContext.listenerRank,
+        dailyListenersChange: rankContext.dailyListenersChange ?? null,
+        artistAbove: rankContext.artistAbove
+          ? {
+              name: rankContext.artistAbove.name,
+              slug: rankContext.artistAbove.slug,
+            }
+          : null,
+        artistBelow: rankContext.artistBelow
+          ? {
+              name: rankContext.artistBelow.name,
+              slug: rankContext.artistBelow.slug,
+            }
+          : null,
+      }
+    : null;
+
+  // Plain-text rank sentence for meta description only
+  const rankSentencePlain = (() => {
     if (!rankContext?.listenerRank) return null;
 
     const parts = [
@@ -82,9 +101,8 @@ export function buildArtistSummary(artist: PublicArtist) {
     return parts.join(" — ") + ".";
   })();
 
-  // Highlights — each is independently optional
   const highlights = [
-    rankSentence,
+    rankSentencePlain,
     topSong?.title && topSong?.totalStreams && Number(topSong.totalStreams) > 0
       ? Number(topSong.totalStreams) >= 1e9
         ? `${artist.name}'s most streamed song is "${topSong.title}", with over ${(Number(topSong.totalStreams) / 1e9).toFixed(1)}B streams.`
@@ -112,8 +130,9 @@ export function buildArtistSummary(artist: PublicArtist) {
 
   return {
     intro,
-    highlights,
+    highlights: highlights.filter((h) => h !== rankSentencePlain),
     metaDescription,
     hasContent: !!hasContent,
+    rankContext: rankContextStructured,
   };
 }

@@ -11,6 +11,7 @@ import {
   Megaphone,
   Medal,
   ListOrdered,
+  Disc3,
 } from "lucide-react";
 
 import { SidebarLink } from "./sidebar-link";
@@ -48,6 +49,10 @@ export function Sidebar({ charts }: { charts: AvailableChart[] }) {
               <SidebarLink href="/artists">
                 <Users className="w-4.5 h-4.5 mr-2 shrink-0" />
                 Artists
+              </SidebarLink>
+              <SidebarLink href="/albums">
+                <Disc3 className="w-4.5 h-4.5 mr-2 shrink-0" />
+                Albums
               </SidebarLink>
               <SidebarLink href="/charts">
                 <BarChart2 className="w-4.5 h-4.5 mr-2 shrink-0" />

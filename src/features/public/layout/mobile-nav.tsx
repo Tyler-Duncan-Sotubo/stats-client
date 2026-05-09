@@ -15,6 +15,7 @@ import {
   ChevronRight,
   Medal,
   ListOrdered,
+  Disc3,
 } from "lucide-react";
 import {
   Sheet,
@@ -126,8 +127,12 @@ export function MobileNav({ charts }: { charts: AvailableChart[] }) {
               <Users className="w-4 h-4 shrink-0" /> Artists
             </NavLink>
             <NavLink href="/charts" onClick={close}>
+              <Disc3 className="w-4 h-4 shrink-0" /> Albums
+            </NavLink>
+            <NavLink href="/charts" onClick={close}>
               <BarChart2 className="w-4 h-4 shrink-0" /> Charts
             </NavLink>
+
             <NavLink href="/milestones" onClick={close}>
               <Medal className="w-4 h-4 shrink-0" /> Milestones
             </NavLink>
