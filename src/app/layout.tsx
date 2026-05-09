@@ -6,7 +6,6 @@ import { Toaster } from "sonner";
 import { Plus_Jakarta_Sans } from "next/font/google";
 import { ScrollToTop } from "@/shared/ui/scroll-to-top";
 import Script from "next/script";
-import { PopunderAd } from "@/shared/ui/PopunderAd";
 
 const plusJakarta = Plus_Jakarta_Sans({
   subsets: ["latin"],
@@ -36,7 +35,6 @@ export default function RootLayout({
         <NextAuthProvider>
           <QueryProvider>
             <ScrollToTop />
-            <PopunderAd />
             {/* Google Analytics — skip if loaded in iframe */}
             <Script
               src="https://www.googletagmanager.com/gtag/js?id=G-4YWCN1HRXE"
