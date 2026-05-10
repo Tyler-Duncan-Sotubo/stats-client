@@ -216,6 +216,64 @@ export function getSongMilestone(params: {
   );
 }
 
+export function getRecentMilestones(params?: {
+  isAfrobeats?: boolean;
+  page?: number;
+  limit?: number;
+}) {
+  const q = buildQuery({
+    isAfrobeats: params?.isAfrobeats,
+    page: params?.page,
+    limit: params?.limit,
+  });
+  return apiFetch<RecentMilestonesResponse>(
+    `/api/public/milestones/recent?${q}`,
+  );
+}
+
+export function getArtistMilestoneTimeline(artistSlug: string) {
+  return apiFetch<ArtistMilestoneTimelineEntry[]>(
+    `/api/public/milestones/timeline/${artistSlug}`,
+  );
+}
+
+// ── Milestone facts ───────────────────────────────────────────────────────────
+
+export function getArtistStreamFact(artistSlug: string, threshold: number) {
+  return apiFetch<MilestoneFact>(
+    `/api/public/milestones/facts/${artistSlug}/streams/${threshold}`,
+  );
+}
+
+export function getArtistListenerFact(artistSlug: string, threshold: number) {
+  return apiFetch<MilestoneFact>(
+    `/api/public/milestones/facts/${artistSlug}/listeners/${threshold}`,
+  );
+}
+
+export function getSongStreamFact(
+  artistSlug: string,
+  songSlug: string,
+  threshold: number,
+) {
+  return apiFetch<MilestoneFact>(
+    `/api/public/milestones/facts/${artistSlug}/songs/${songSlug}/streams/${threshold}`,
+  );
+}
+
+export function getIndexableMilestoneFacts(limit: number, offset: number) {
+  return apiFetch<
+    {
+      slug: string;
+      updatedAt: string;
+      artistSlug: string;
+      metric: string;
+      threshold: number;
+      songSlug: string | null;
+    }[]
+  >(`/api/public/milestones/facts/indexable?limit=${limit}&offset=${offset}`);
+}
+
 // ── Ask ───────────────────────────────────────────────────────────────────────
 
 export async function askQuestion(question: string): Promise<AskResult> {
@@ -387,6 +445,7 @@ export interface PublicArtist {
   awardsSummary: ArtistAwardsSummary;
   audiomackStats: AudiomackStats | null;
   rankContext: any;
+  albums: PublicAlbum[];
 }
 
 export interface ArtistAwardsSummary {
@@ -786,4 +845,60 @@ export interface PublicAlbumTrack {
 export interface FullAlbum {
   album: PublicAlbum;
   tracklist: PublicAlbumTrack[];
+}
+
+export interface RecentMilestone {
+  id: string;
+  metric: string;
+  threshold: number;
+  crossedAt: string;
+  isAfrobeats: boolean;
+  streamValue: number | null;
+  artistId: string | null;
+  artistName: string | null;
+  artistSlug: string | null;
+  artistImageUrl: string | null;
+  songId: string | null;
+  songTitle: string | null;
+  songSlug: string | null;
+  songImageUrl: string | null;
+}
+
+export interface RecentMilestonesResponse {
+  data: RecentMilestone[];
+  meta: { total: number; page: number; limit: number; totalPages: number };
+}
+
+export interface ArtistMilestoneTimelineEntry {
+  metric: string;
+  threshold: number;
+  crossedAt: string;
+  streamValue: number | null;
+}
+
+export interface MilestoneFact {
+  id: string;
+  metric: string;
+  threshold: number;
+  crossedAt: string;
+  isAfrobeats: boolean;
+  streamValue: number | null;
+  artistId: string;
+  artistName: string;
+  artistSlug: string;
+  artistImageUrl: string | null;
+  originCountry: string | null;
+  spotifyId: string | null;
+  songId: string | null;
+  songTitle: string | null;
+  songSlug: string | null;
+  songImageUrl: string | null;
+  spotifyTrackId: string | null;
+  currentArtistStreams: number;
+  currentSongStreams: number;
+  artistMilestones: {
+    metric: string;
+    threshold: number;
+    crossedAt: string;
+  }[];
 }

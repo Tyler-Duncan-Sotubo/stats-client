@@ -10,6 +10,7 @@ import { ArtistRecords } from "./artist-records";
 import { ArtistSparkline } from "./artist-sparkline";
 import { ArtistRelatedSearches } from "./artist-related-search";
 import { ArtistAudiomackStats } from "./artist-audiomack-stats";
+import { ArtistAlbums } from "./artist-albums";
 
 interface ArtistViewProps {
   artist: PublicArtist;
@@ -33,13 +34,15 @@ export function ArtistView({
         <div className="mt-8 grid gap-8 grid-cols-1 xl:grid-cols-[minmax(0,1fr)_400px]">
           <div className="min-w-0 flex flex-col gap-8">
             {history.length > 0 && <ArtistSparkline history={history} />}
-
             <ArtistTopSongs songs={artist.topSongs} />
-            <ArtistRelatedSearches artist={artist} />
 
+            <ArtistRelatedSearches artist={artist} />
             <ArtistCharts charts={artist.charts} />
           </div>
           <div className="min-w-0 flex flex-col gap-6">
+            {artist.albums?.length > 0 && (
+              <ArtistAlbums albums={artist.albums} />
+            )}
             {artist.audiomackStats && (
               <ArtistAudiomackStats stats={artist.audiomackStats} />
             )}

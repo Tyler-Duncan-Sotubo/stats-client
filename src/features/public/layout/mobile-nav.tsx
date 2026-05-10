@@ -126,7 +126,7 @@ export function MobileNav({ charts }: { charts: AvailableChart[] }) {
             <NavLink href="/artists" onClick={close}>
               <Users className="w-4 h-4 shrink-0" /> Artists
             </NavLink>
-            <NavLink href="/charts" onClick={close}>
+            <NavLink href="/albums" onClick={close}>
               <Disc3 className="w-4 h-4 shrink-0" /> Albums
             </NavLink>
             <NavLink href="/charts" onClick={close}>
