@@ -62,10 +62,17 @@ export function AskView({ question, result, popular, recent }: AskViewProps) {
   return (
     <section className="grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_300px] gap-6">
       <div className="pb-10">
-        <AnswerHero question={question} answer={result.answer} />
+        <AnswerHero
+          question={question}
+          answer={result.answer}
+          slug={result.slug as string | undefined}
+        />
 
         {isArtist && result.data && (
-          <ArtistAnswerCard data={result.data} slug={result.slug} />
+          <ArtistAnswerCard
+            data={result.data}
+            slug={result.slug as string | null}
+          />
         )}
 
         {isComparison && result.data && <ComparisonCard data={result.data} />}

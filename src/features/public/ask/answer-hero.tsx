@@ -1,5 +1,6 @@
 import { getTextColors } from "@/shared/utils/get-text-colors";
 import { useMemo } from "react";
+import { ShareButton } from "@/shared/ui/share-button";
 
 const BG_COLORS = [
   "#0C1A2E",
@@ -21,20 +22,13 @@ function getBgForQuestion(question: string): string {
 }
 
 function formatCount(value: number): string {
-  if (value >= 1_000_000_000) {
-    return `${(value / 1_000_000_000).toFixed(1)}B`;
-  }
-  if (value >= 1_000_000) {
-    return `${(value / 1_000_000).toFixed(1)}M`;
-  }
-  if (value >= 1_000) {
-    return `${(value / 1_000).toFixed(1)}K`;
-  }
+  if (value >= 1_000_000_000) return `${(value / 1_000_000_000).toFixed(1)}B`;
+  if (value >= 1_000_000) return `${(value / 1_000_000).toFixed(1)}M`;
+  if (value >= 1_000) return `${(value / 1_000).toFixed(1)}K`;
   return value.toString();
 }
 
 function formatNumbersInText(text: string): string {
-  // Match numbers with optional comma separators e.g. 91,107,250
   return text.replace(/\b(\d{1,3}(?:,\d{3})+|\d{4,})\b/g, (match) => {
     const num = parseInt(match.replace(/,/g, ""), 10);
     return formatCount(num);
@@ -65,13 +59,17 @@ function formatHeroAnswer(answer: string): string {
 interface AnswerHeroProps {
   question: string;
   answer: string;
+  slug: string | undefined;
 }
 
-export function AnswerHero({ question, answer }: AnswerHeroProps) {
+export function AnswerHero({ question, answer, slug }: AnswerHeroProps) {
   const bg = useMemo(() => getBgForQuestion(question), [question]);
   const colors = useMemo(() => getTextColors(bg), [bg]);
-
   const formattedAnswer = useMemo(() => formatHeroAnswer(answer), [answer]);
+
+  const shareUrl = slug
+    ? `https://tooxclusive.com/stats/ask/${slug}`
+    : undefined;
 
   return (
     <div
@@ -111,10 +109,17 @@ export function AnswerHero({ question, answer }: AnswerHeroProps) {
           </p>
         )}
 
-        {/* footer */}
-        <p className="text-xs mt-4" style={{ color: colors.muted }}>
-          Spotify streams only · Data updated daily
-        </p>
+        {/* footer row — data credit + share */}
+        <div className="flex items-center justify-between mt-4 flex-wrap gap-2">
+          <p className="text-xs" style={{ color: colors.muted }}>
+            Spotify streams only · Data updated daily
+          </p>
+          <ShareButton
+            title={`${question} — TooXclusive Stats`}
+            text={`${formattedAnswer} via @tooxclusive 📊`}
+            url={shareUrl as string}
+          />
+        </div>
       </div>
     </div>
   );

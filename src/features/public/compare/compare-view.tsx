@@ -8,7 +8,8 @@ import { ArtistSearch } from "./artist-search";
 import { CompareArtistCard } from "./compare-artist-card";
 import { CompareStatRow } from "./compare-stat-row";
 import { CompareScoreCard } from "./compare-score-card";
-import { GitCompare, Share2, Check } from "lucide-react";
+import { GitCompare } from "lucide-react";
+import { ShareButton } from "@/shared/ui/share-button";
 
 export function CompareView({
   initialLeft,
@@ -58,26 +59,17 @@ export function CompareView({
 
   const [leftLoading, setLeftLoading] = useState(false);
   const [rightLoading, setRightLoading] = useState(false);
-  const [copied, setCopied] = useState(false);
-
-  // ── URL updater (NEW SEO ROUTE) ─────────────────────────────
 
   function updateUrl(leftSlug?: string | null, rightSlug?: string | null) {
     if (!leftSlug || !rightSlug) return;
-
-    // enforce alphabetical canonical
     const [a, b] =
       leftSlug < rightSlug ? [leftSlug, rightSlug] : [rightSlug, leftSlug];
-
     router.replace(`/compare/${a}-vs-${b}`, { scroll: false });
   }
-
-  // ── Select handlers ─────────────────────────────────────────
 
   async function selectLeft(artist: BrowseArtist) {
     setLeftBrowse(artist);
     if (!artist.slug) return;
-
     setLeftLoading(true);
     try {
       const full = await compareSuggestArtist(artist.slug);
@@ -91,7 +83,6 @@ export function CompareView({
   async function selectRight(artist: BrowseArtist) {
     setRightBrowse(artist);
     if (!artist.slug) return;
-
     setRightLoading(true);
     try {
       const full = await compareSuggestArtist(artist.slug);
@@ -112,18 +103,7 @@ export function CompareView({
     setRightArtist(null);
   }
 
-  // ── Share ──────────────────────────────────────────────────
-
-  async function handleShare() {
-    const url = window.location.href;
-    await navigator.clipboard.writeText(url);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  }
-
   const bothSelected = leftArtist && rightArtist;
-
-  // ── Suggested comparisons ───────────────────────────────────
 
   const SUGGESTED = [
     { left: "wizkid", right: "burna-boy", label: "Wizkid vs Burna Boy" },
@@ -132,39 +112,16 @@ export function CompareView({
     { left: "beyonce", right: "rihanna", label: "Beyoncé vs Rihanna" },
   ];
 
-  // ── UI ─────────────────────────────────────────────────────
-
   return (
     <div className="pb-16 max-w-5xl">
       {/* Header */}
-      <div className="mb-8 flex items-start justify-between">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight text-foreground">
-            Compare Artists
-          </h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Search two artists to compare their stats head to head
-          </p>
-        </div>
-
-        {bothSelected && (
-          <button
-            onClick={handleShare}
-            className="flex items-center gap-2 rounded-xl border border-border bg-card px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-          >
-            {copied ? (
-              <>
-                <Check className="w-4 h-4 text-emerald-500" />
-                <span className="text-emerald-500">Copied!</span>
-              </>
-            ) : (
-              <>
-                <Share2 className="w-4 h-4" />
-                Share
-              </>
-            )}
-          </button>
-        )}
+      <div className="mb-8">
+        <h1 className="text-2xl font-bold tracking-tight text-foreground">
+          Compare Artists
+        </h1>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Search two artists to compare their stats head to head
+        </p>
       </div>
 
       {/* Search */}
@@ -210,6 +167,17 @@ export function CompareView({
       {/* Comparison */}
       {bothSelected && !leftLoading && !rightLoading && (
         <div className="flex flex-col gap-6">
+          {/* Share — below all comparison content, natural end position */}
+          <div className="flex items-center">
+            <p className="text-xs text-muted-foreground">
+              Share this comparison
+            </p>
+            <ShareButton
+              title={`${leftArtist.name} vs ${rightArtist.name} — TooXclusive Stats`}
+              text={`${leftArtist.name} vs ${rightArtist.name} — who has more streams on Spotify? 📊`}
+              url={`https://tooxclusive.com/stats/compare`}
+            />
+          </div>
           <CompareScoreCard left={leftArtist} right={rightArtist} />
 
           <div>
@@ -219,7 +187,6 @@ export function CompareView({
                 Head to Head
               </h2>
             </div>
-
             <CompareStatRow left={leftArtist} right={rightArtist} />
           </div>
         </div>
@@ -240,7 +207,6 @@ export function CompareView({
             <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground/50 mb-1">
               Popular comparisons
             </p>
-
             {SUGGESTED.map((s) => (
               <button
                 key={s.label}

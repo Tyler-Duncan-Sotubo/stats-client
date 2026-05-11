@@ -8,8 +8,9 @@ import { SongFeatures } from "./song-features";
 import { SongSparkline } from "./song-sparkline";
 import { ArtistSongsList } from "./artist-songs-list";
 import { ChevronLeft } from "lucide-react";
-import { toTitleCase } from "@/shared/utils/format";
+import { formatNumber, toTitleCase } from "@/shared/utils/format";
 import { SongSummary } from "./song-summary";
+import { ShareButton } from "@/shared/ui/share-button";
 
 export async function SongView({ song }: { song: PublicSong }) {
   const img = song.imageUrl ?? song.artistImageUrl;
@@ -35,21 +36,21 @@ export async function SongView({ song }: { song: PublicSong }) {
       </Link>
 
       {/* Hero */}
-      <div className="flex items-center gap-6 mb-8">
+      <div className="flex items-start gap-4 mb-8">
         {/* Artwork */}
-        <div className="relative h-32 w-32 shrink-0 overflow-hidden rounded-2xl bg-muted border border-border shadow-lg">
+        <div className="relative h-20 w-20 sm:h-36 sm:w-36 shrink-0 overflow-hidden rounded-xl sm:rounded-2xl bg-muted border border-border shadow-lg">
           {img ? (
             <Image
               src={img}
               alt={song.title}
               fill
-              sizes="128px"
+              sizes="(max-width: 640px) 80px, 144px"
               className="object-cover"
               priority
             />
           ) : (
             <div className="flex h-full w-full items-center justify-center">
-              <span className="text-4xl font-bold text-muted-foreground/20">
+              <span className="text-2xl sm:text-4xl font-bold text-muted-foreground/20">
                 {song.title[0]}
               </span>
             </div>
@@ -58,62 +59,65 @@ export async function SongView({ song }: { song: PublicSong }) {
 
         {/* Meta */}
         <div className="flex-1 min-w-0">
-          <h1 className="text-3xl font-bold tracking-tight text-foreground leading-tight mb-1">
+          <h1 className="text-lg sm:text-3xl font-bold tracking-tight text-foreground leading-tight mb-1 line-clamp-2">
             {toTitleCase(song.title)}
           </h1>
 
           <Link
             href={song.artistSlug ? `/artists/${song.artistSlug}` : "#"}
-            className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+            className="text-sm text-muted-foreground hover:text-foreground transition-colors truncate block"
           >
             {song.artistName ? toTitleCase(song.artistName) : "—"}
           </Link>
 
           {/* Featured artists */}
           {song.features.length > 0 && (
-            <div className="flex items-center gap-2 mt-1.5 flex-wrap">
+            <div className="flex items-center gap-1.5 mt-1.5 flex-wrap">
               <span className="text-xs text-muted-foreground">feat.</span>
               {song.features.map((f) => (
                 <Link
                   key={f.artistId}
                   href={f.artistSlug ? `/artists/${f.artistSlug}` : "#"}
-                  className="flex items-center gap-1.5 text-xs font-medium hover:text-primary transition-colors"
+                  className="flex items-center gap-1 text-xs font-medium hover:text-primary transition-colors"
                 >
                   {f.artistImageUrl && (
-                    <div className="relative w-5 h-5 rounded-full overflow-hidden shrink-0">
+                    <div className="relative w-4 h-4 rounded-full overflow-hidden shrink-0">
                       <Image
                         src={f.artistImageUrl}
                         alt={f.artistName ?? ""}
                         fill
-                        sizes="20px"
+                        sizes="16px"
                         className="object-cover"
                       />
                     </div>
                   )}
-                  {f.artistName}
+                  <span className="truncate max-w-20 sm:max-w-none">
+                    {f.artistName}
+                  </span>
                 </Link>
               ))}
             </div>
           )}
 
-          <div className="mt-3 flex items-center gap-2 flex-wrap">
+          {/* Tags */}
+          <div className="mt-3 flex items-center gap-1.5 flex-wrap">
             {song.releaseDate && (
-              <span className="rounded-full border border-border bg-muted/40 px-3 py-1 text-xs font-medium text-muted-foreground">
+              <span className="rounded-full border border-border bg-muted/40 px-2 sm:px-3 py-0.5 sm:py-1 text-[10px] sm:text-xs font-medium text-muted-foreground whitespace-nowrap">
                 {new Date(song.releaseDate).toLocaleDateString("en-GB", {
                   day: "numeric",
-                  month: "long",
+                  month: "short",
                   year: "numeric",
                 })}
               </span>
             )}
             {song.isAfrobeats && (
-              <span className="rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
+              <span className="rounded-full border border-primary/20 bg-primary/10 px-2 sm:px-3 py-0.5 sm:py-1 text-[10px] sm:text-xs font-semibold text-primary whitespace-nowrap">
                 Afrobeats
               </span>
             )}
             {song.explicit && (
-              <span className="rounded-full border border-border bg-muted/40 px-3 py-1 text-xs font-semibold text-muted-foreground">
-                Explicit
+              <span className="rounded-full border border-border bg-muted/40 px-2 sm:px-3 py-0.5 sm:py-1 text-[10px] sm:text-xs font-semibold text-muted-foreground">
+                E
               </span>
             )}
             {song.spotifyTrackId && (
@@ -121,13 +125,29 @@ export async function SongView({ song }: { song: PublicSong }) {
                 href={`https://open.spotify.com/track/${song.spotifyTrackId}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="rounded-full border border-[#1DB954]/30 bg-[#1DB954]/10 px-3 py-1 text-xs font-semibold text-[#1DB954] hover:bg-[#1DB954]/20 transition-colors"
+                className="rounded-full border border-[#1DB954]/30 bg-[#1DB954]/10 px-2 sm:px-3 py-0.5 sm:py-1 text-[10px] sm:text-xs font-semibold text-[#1DB954] hover:bg-[#1DB954]/20 transition-colors whitespace-nowrap"
               >
-                Open in Spotify
+                Spotify
               </a>
             )}
+            <div className="hidden sm:block">
+              <ShareButton
+                title={`${song.title} by ${song.artistName} — TooXclusive Stats`}
+                text={`"${song.title}" by ${song.artistName} has ${formatNumber(song.totalStreams ?? 0)} streams on Spotify 📊`}
+                url={`https://tooxclusive.com/stats/songs/${song.slug}`}
+              />
+            </div>
           </div>
         </div>
+      </div>
+
+      {/* Share — own row below hero */}
+      <div className="mb-6 sm:hidden">
+        <ShareButton
+          title={`${song.title} by ${song.artistName} — TooXclusive Stats`}
+          text={`"${song.title}" by ${song.artistName} has ${formatNumber(song.totalStreams ?? 0)} streams on Spotify 📊`}
+          url={`https://tooxclusive.com/stats/songs/${song.slug}`}
+        />
       </div>
 
       {/* Stat row */}
