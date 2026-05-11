@@ -71,7 +71,7 @@ export function ArtistsPagination({
             <button
               key={p}
               onClick={() => onPage(p)}
-              className={`rounded-lg h-8 min-w-[32px] px-2 text-xs font-semibold transition-all ${
+              className={`rounded-lg h-8 min-w-8 px-2 text-xs font-semibold transition-all ${
                 page === p
                   ? "bg-foreground text-background shadow-sm"
                   : "text-muted-foreground hover:text-foreground hover:bg-muted"

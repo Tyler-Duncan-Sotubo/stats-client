@@ -72,7 +72,8 @@ export function getArtistHistory(slug: string) {
   return apiFetch<ArtistHistoryPoint[]>(`/api/public/artists/${slug}/history`);
 }
 
-export function suggestArtists(params?: ArtistBrowseParams) {
+// In public.ts add q param
+export function suggestArtists(params?: ArtistBrowseParams & { q?: string }) {
   const q = buildQuery({
     limit: params?.limit,
     page: params?.page,
@@ -80,6 +81,7 @@ export function suggestArtists(params?: ArtistBrowseParams) {
     country: params?.country,
     isAfrobeats: params?.isAfrobeats,
     sortBy: params?.sortBy,
+    q: params?.q,
   });
   return publicFetch<ArtistBrowseResponse>(`/api/public/artists?${q}`);
 }

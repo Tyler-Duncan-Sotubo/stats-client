@@ -41,10 +41,11 @@ export function ArtistSearch({
       setLoading(true);
       try {
         const res = await suggestArtists({
-          letter: query[0].toUpperCase(),
-          limit: 100,
-          sortBy: "totalStreams",
+          q: query,
+          limit: 20,
         });
+        setResults(res.data);
+        setOpen(true);
         const filtered = res.data.filter((a) =>
           a.name.toLowerCase().includes(query.toLowerCase()),
         );

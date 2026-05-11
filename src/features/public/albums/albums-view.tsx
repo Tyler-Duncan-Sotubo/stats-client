@@ -12,6 +12,7 @@ interface AlbumsViewProps {
   meta: { total: number; page: number; limit: number; totalPages: number };
   currentSort: string;
   currentAlbumType?: string;
+  currentIsAfrobeats?: boolean;
 }
 
 export function AlbumsView({
@@ -19,6 +20,7 @@ export function AlbumsView({
   meta,
   currentSort,
   currentAlbumType,
+  currentIsAfrobeats,
 }: AlbumsViewProps) {
   const router = useRouter();
   const pathname = usePathname();
@@ -45,6 +47,7 @@ export function AlbumsView({
         <AlbumsFilters
           currentSort={currentSort}
           currentAlbumType={currentAlbumType}
+          currentIsAfrobeats={currentIsAfrobeats}
         />
       </div>
 

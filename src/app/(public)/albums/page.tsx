@@ -11,6 +11,7 @@ interface Props {
     page?: string;
     sortBy?: string;
     albumType?: string;
+    isAfrobeats?: string;
   }>;
 }
 
@@ -104,11 +105,17 @@ export default async function AlbumsPage({ searchParams }: Props) {
     (params.sortBy as "totalStreams" | "dailyStreams" | "releaseDate") ||
     "totalStreams";
   const albumType = params.albumType || undefined;
+  const isAfrobeats =
+    params.isAfrobeats === "true"
+      ? true
+      : params.isAfrobeats === "false"
+        ? false
+        : undefined;
 
   const result = await getAlbums({
     page,
     limit: 50,
-    isAfrobeats: true,
+    isAfrobeats,
     sortBy,
     albumType,
   }).catch(() => null);
@@ -123,6 +130,7 @@ export default async function AlbumsPage({ searchParams }: Props) {
         meta={result?.meta ?? { total: 0, page: 1, limit: 50, totalPages: 0 }}
         currentSort={sortBy}
         currentAlbumType={albumType}
+        currentIsAfrobeats={isAfrobeats}
       />
     </>
   );

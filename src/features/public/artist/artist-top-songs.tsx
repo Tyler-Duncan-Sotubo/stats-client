@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import type { ArtistSong } from "@/lib/api/public";
 import { toTitleCase, formatNumber } from "@/shared/utils/format";
@@ -17,11 +18,29 @@ export function ArtistTopSongs({ songs }: { songs: ArtistSong[] }) {
             href={song.slug ? `/songs/${song.slug}` : "#"}
             className="flex items-center gap-4 px-4 py-3 border-b border-border last:border-0 hover:bg-muted/40 transition-colors"
           >
+            {/* Rank */}
             <span className="w-5 shrink-0 text-xs font-mono text-muted-foreground text-right">
               {i + 1}
             </span>
+
+            {/* Image */}
+            <div className="relative w-9 h-9 shrink-0 rounded overflow-hidden bg-muted">
+              {song.imageUrl ? (
+                <Image
+                  src={song.imageUrl}
+                  alt={song.title}
+                  fill
+                  sizes="36px"
+                  className="object-cover"
+                />
+              ) : (
+                <div className="w-full h-full bg-muted" />
+              )}
+            </div>
+
+            {/* Title + year */}
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-foreground truncate group-hover:text-primary">
+              <p className="text-sm font-medium text-foreground truncate">
                 {toTitleCase(song.title)}
               </p>
               {song.releaseDate && (
@@ -30,6 +49,8 @@ export function ArtistTopSongs({ songs }: { songs: ArtistSong[] }) {
                 </p>
               )}
             </div>
+
+            {/* Streams */}
             <div className="text-right shrink-0">
               {song.totalStreams && (
                 <p className="text-sm font-semibold tabular-nums text-foreground">
