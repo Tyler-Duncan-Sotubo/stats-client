@@ -6,7 +6,7 @@ import {
   getArtistListenerFact,
   getSongStreamFact,
 } from "@/lib/api/public";
-import { MilestoneFactView } from "@/features/public/milestones/milestone-fact-view";
+import { MilestoneFactView } from "@/features/public/milestones/facts/milestone-fact-view";
 import type { MilestoneFact } from "@/lib/api/public";
 
 const BASE_URL = "https://tooxclusive.com/stats";

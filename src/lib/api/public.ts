@@ -263,6 +263,23 @@ export function getSongStreamFact(
   );
 }
 
+export function getMilestoneFacts(params?: {
+  isAfrobeats?: boolean;
+  metric?: string;
+  page?: number;
+  limit?: number;
+}) {
+  const q = buildQuery({
+    isAfrobeats: params?.isAfrobeats,
+    metric: params?.metric,
+    page: params?.page,
+    limit: params?.limit,
+  });
+  return apiFetch<RecentMilestonesResponse>(
+    `/api/public/milestones/facts?${q}`,
+  );
+}
+
 export function getIndexableMilestoneFacts(limit: number, offset: number) {
   return apiFetch<
     {

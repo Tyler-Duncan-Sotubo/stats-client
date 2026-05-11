@@ -12,6 +12,7 @@ import {
   Medal,
   ListOrdered,
   Disc3,
+  Zap,
 } from "lucide-react";
 
 import { SidebarLink } from "./sidebar-link";
@@ -61,6 +62,10 @@ export function Sidebar({ charts }: { charts: AvailableChart[] }) {
               <SidebarLink href="/milestones">
                 <Medal className="w-4.5 h-4.5 mr-2 shrink-0" />
                 Milestones
+              </SidebarLink>
+              <SidebarLink href="/milestones/facts">
+                <Zap className="w-4.5 h-4.5 mr-2 shrink-0" />
+                Milestone Facts
               </SidebarLink>
               <SidebarLink href="/rankings">
                 <Trophy className="w-4.5 h-4.5 mr-2 shrink-0" />

@@ -42,6 +42,12 @@ export async function GET() {
   </sitemap>`,
   ).join("");
 
+  const milestoneFactsHubSitemap = `
+  <sitemap>
+    <loc>${BASE_URL}/sitemaps/milestones-facts-hub</loc>
+    <lastmod>${now}</lastmod>
+  </sitemap>`;
+
   const compareSitemap = `
   <sitemap>
     <loc>${BASE_URL}/sitemaps/compare</loc>
@@ -72,6 +78,7 @@ ${milestoneSitemap}
 ${milestoneFactSitemaps}
 ${compareSitemap}
 ${rankingSitemap}
+${milestoneFactsHubSitemap}
 </sitemapindex>`;
 
   return new NextResponse(xml, {
