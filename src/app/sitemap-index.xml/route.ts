@@ -4,7 +4,7 @@ const BASE_URL = "https://tooxclusive.com/stats";
 const ARTIST_PAGES = 4;
 const SONG_PAGES = 100;
 const ALBUM_PAGES = 1;
-const MILESTONE_FACT_PAGES = 18;
+const MILESTONE_FACT_PAGES = 30;
 
 export async function GET() {
   const now = new Date().toISOString();
