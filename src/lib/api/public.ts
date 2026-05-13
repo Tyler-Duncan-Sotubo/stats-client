@@ -566,6 +566,7 @@ export interface PublicSong {
   title: string;
   slug: string | null;
   imageUrl: string | null;
+  tooxclusiveUrl: string | null;
   spotifyTrackId: string | null;
   isAfrobeats: boolean;
   explicit: boolean;

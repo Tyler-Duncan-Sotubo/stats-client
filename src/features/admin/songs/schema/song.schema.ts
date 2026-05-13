@@ -10,6 +10,7 @@ export const createSongSchema = z.object({
   explicit: z.boolean().default(false),
   isAfrobeats: z.boolean().default(false),
   imageUrl: z.string().url().optional().or(z.literal("")),
+  tooxclusiveUrl: z.string().url().optional().or(z.literal("")),
   entityStatus: z
     .enum(["canonical", "provisional", "merged", "rejected"])
     .default("canonical"),

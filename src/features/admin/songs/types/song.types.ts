@@ -12,6 +12,7 @@ export interface Song {
   explicit: boolean;
   isAfrobeats: boolean;
   imageUrl: string | null;
+  tooxclusiveUrl: string | null;
   entityStatus: string;
   sourceOfTruth: string | null;
   needsReview: boolean;

@@ -85,6 +85,7 @@ export function SongForm({
       explicit: defaultValues?.explicit ?? false,
       isAfrobeats: defaultValues?.isAfrobeats ?? false,
       imageUrl: defaultValues?.imageUrl ?? "",
+      tooxclusiveUrl: defaultValues?.tooxclusiveUrl ?? "",
       entityStatus: (defaultValues?.entityStatus as any) ?? "canonical",
       sourceOfTruth: (defaultValues?.sourceOfTruth as any) ?? undefined,
     },
@@ -333,7 +334,7 @@ export function SongForm({
           <Input
             id="durationMs"
             type="number"
-            {...form.register("durationMs")}
+            {...form.register("durationMs", { valueAsNumber: true })}
             placeholder="210000"
           />
         </div>
@@ -345,6 +346,15 @@ export function SongForm({
             id="imageUrl"
             {...form.register("imageUrl")}
             placeholder="https://..."
+          />
+        </div>
+
+        <div className="space-y-1.5">
+          <Label htmlFor="tooxclusiveUrl">TooXclusive URL</Label>
+          <Input
+            id="tooxclusiveUrl"
+            {...form.register("tooxclusiveUrl")}
+            placeholder="https://tooxclusive.com/..."
           />
         </div>
 
