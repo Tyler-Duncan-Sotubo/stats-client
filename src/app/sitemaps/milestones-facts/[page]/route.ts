@@ -25,8 +25,8 @@ export async function GET(
   <url>
     <loc>${BASE_URL}/milestones/facts/${f.slug}</loc>
     <lastmod>${new Date(f.updatedAt).toISOString()}</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
+<changefreq>daily</changefreq>
+<priority>0.8</priority>
   </url>`,
     )
     .join("");
