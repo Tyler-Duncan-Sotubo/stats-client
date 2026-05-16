@@ -2,10 +2,17 @@ const BASE_URL = process.env.API_BASE_URL ?? "http://localhost:8000";
 const PUBLIC_BASE_URL =
   process.env.NEXT_PUBLIC_BACKEND_URL ?? "http://localhost:8000";
 
+const REVALIDATE_DEFAULT = 43200; // 12 hours
+
 // ── Fetch helpers ─────────────────────────────────────────────────────────────
 
-async function apiFetch<T>(path: string): Promise<T> {
-  const res = await fetch(`${BASE_URL}${path}`, { cache: "no-store" });
+async function apiFetch<T>(
+  path: string,
+  revalidate = REVALIDATE_DEFAULT,
+): Promise<T> {
+  const res = await fetch(`${BASE_URL}${path}`, {
+    next: { revalidate },
+  });
   if (!res.ok) throw new Error(`API error ${res.status} — ${path}`);
   return res.json() as Promise<T>;
 }
