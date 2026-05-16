@@ -3,8 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getIndexableSongs } from "@/lib/api/public";
 
 const BASE_URL = "https://tooxclusive.com/stats";
-const PAGE_SIZE = 10000;
-const MIN_STREAMS = 1_000_000;
+const PAGE_SIZE = 5000;
 
 export async function GET(
   _req: NextRequest,
@@ -21,7 +20,7 @@ export async function GET(
   }
 
   const urls = songs
-    .filter((s) => s.slug && Number(s.totalStreams ?? 0) >= MIN_STREAMS)
+    .filter((s) => s.slug)
     .map((s) => {
       const streams = Number(s.totalStreams ?? 0);
       const priority =

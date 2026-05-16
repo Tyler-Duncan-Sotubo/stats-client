@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 
 const BASE_URL = "https://tooxclusive.com/stats";
 const ARTIST_PAGES = 4;
-const SONG_PAGES = 100;
+const SONG_PAGES = 122;
 const ALBUM_PAGES = 1;
 const MILESTONE_FACT_PAGES = 30;
 
