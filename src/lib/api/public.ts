@@ -2,7 +2,7 @@ const BASE_URL = process.env.API_BASE_URL ?? "http://localhost:8000";
 const PUBLIC_BASE_URL =
   process.env.NEXT_PUBLIC_BACKEND_URL ?? "http://localhost:8000";
 
-const REVALIDATE_DEFAULT = 43200; // 12 hours
+const REVALIDATE_DEFAULT = 3600; // 1 hour
 
 // ── Fetch helpers ─────────────────────────────────────────────────────────────
 
