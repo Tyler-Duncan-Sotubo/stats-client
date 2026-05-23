@@ -1,7 +1,9 @@
 import { getChart } from "@/lib/api/public";
 import { unstable_cache } from "next/cache";
-import { AfrobeatsChartCard } from "@/features/public/home/afrobeats-chart-card";
-import { SpotifyChartCard } from "@/features/public/home/SpotifyChartCard";
+import {
+  EmbedAfrobeatsCard,
+  EmbedSpotifyCard,
+} from "@/features/public/embeds/embed-stat-card";
 
 export const dynamic = "force-dynamic";
 
@@ -28,8 +30,8 @@ export default async function AfrobeatsChartEmbedPage() {
 
   return (
     <div className="space-y-4">
-      <AfrobeatsChartCard tooxclusive={chart} />
-      <SpotifyChartCard spotify={spotifyEntries} />
+      <EmbedAfrobeatsCard tooxclusive={chart} />
+      <EmbedSpotifyCard spotify={spotifyEntries} />
     </div>
   );
 }
