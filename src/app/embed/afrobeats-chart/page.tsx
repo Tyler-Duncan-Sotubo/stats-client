@@ -18,7 +18,14 @@ const getSpotifyChart = unstable_cache(
   { revalidate: 3600 },
 );
 
-export default async function ChartsEmbedPage() {
+export default async function ChartsEmbedPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ w?: string; h?: string }>;
+}) {
+  const { w, h } = await searchParams;
+  const cardHeight = h ? Math.floor((parseInt(h) - 36) / 2) : undefined;
+
   const [tooxRes, spotifyRes] = await Promise.all([
     getTooxChart().catch(() => null),
     getSpotifyChart().catch(() => null),
@@ -47,8 +54,10 @@ export default async function ChartsEmbedPage() {
     : null;
 
   return (
-    <div className="flex flex-col gap-3 p-3">
-      {/* Tooxclusive Afrobeats #1 */}
+    <div
+      className="flex flex-col gap-3 p-3"
+      style={{ width: w ? `${w}px` : "100%" }}
+    >
       <ChartCard
         platform="Tooxclusive Afrobeats"
         song={tooxTop ? toTitleCase(tooxTop.songTitle) : "—"}
@@ -59,9 +68,9 @@ export default async function ChartsEmbedPage() {
         href="/charts/tooxclusive_top_100/NG"
         bg="#0C1A2E"
         accent="#FFA500"
+        cardHeight={cardHeight}
       />
 
-      {/* Spotify Nigeria #1 */}
       <ChartCard
         platform="Spotify Nigeria"
         song={spotifyTop ? toTitleCase(spotifyTop.songTitle) : "—"}
@@ -72,6 +81,7 @@ export default async function ChartsEmbedPage() {
         href="/charts/spotify_daily_ng/NG"
         bg="#1DB954"
         accent="rgba(255,255,255,0.9)"
+        cardHeight={cardHeight}
       />
     </div>
   );

@@ -1,3 +1,4 @@
+// features/public/embeds/chart-cards.tsx
 export function ChartCard({
   platform,
   song,
@@ -8,6 +9,7 @@ export function ChartCard({
   href,
   bg,
   accent,
+  cardHeight,
 }: {
   platform: string;
   song: string;
@@ -18,18 +20,23 @@ export function ChartCard({
   href: string;
   bg: string;
   accent: string;
+  cardHeight?: number;
 }) {
   return (
     <a
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      style={{ background: bg }}
+      style={{
+        background: bg,
+        height: cardHeight ? `${cardHeight}px` : undefined,
+      }}
       className="relative flex items-center gap-4 overflow-hidden rounded-2xl border border-white/10 p-5 transition-transform hover:scale-[1.01]"
     >
       <div className="pointer-events-none absolute inset-0 bg-linear-to-br from-white/5 via-transparent to-black/30" />
 
       {imageUrl ? (
+        // eslint-disable-next-line @next/next/no-img-element
         <img
           src={imageUrl}
           alt={artist}
