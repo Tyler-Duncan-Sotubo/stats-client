@@ -21,6 +21,7 @@ import type {
   LeaderboardEntry,
   PublicArtist,
 } from "@/lib/api/public";
+import BannerAd from "@/shared/utils/custom-ads";
 
 type SongTab = "top20" | "trending";
 
@@ -51,7 +52,7 @@ export function HomeView({
   return (
     <div>
       {/* Outer grid — content | banner */}
-      <div className="grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_350px] 2xl:grid-cols-[minmax(0,1fr)_350px] gap-6">
+      <div className="grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_350px] 2xl:grid-cols-[minmax(0,1fr)_350px] gap-6 items-start">
         {/* Left — all content */}
         <div className="flex flex-col gap-6">
           {/* Ticker */}
@@ -160,9 +161,9 @@ export function HomeView({
         </div>
 
         {/* Right — banner, sticky */}
-        <div>
-          <div data-wfa-ad="wfa_411_scrollad" data-wfa-size="300x250"></div>
-          <div data-wfa-ad="wfa_411_sidebar_mpu" data-wfa-size="300x250"></div>
+        <div className="sticky top-6 flex flex-col gap-6">
+          <BannerAd />
+          <BannerAd />
         </div>
       </div>
     </div>

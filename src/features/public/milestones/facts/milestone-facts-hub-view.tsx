@@ -3,6 +3,7 @@ import { MilestoneFactsFilters } from "./milestone-facts-filters";
 import { MilestoneFactsList } from "./milestone-facts-list";
 import { MilestoneFactsPagination } from "./milestone-facts-pagination";
 import { Zap } from "lucide-react";
+import BannerAd from "@/shared/utils/custom-ads";
 
 interface Props {
   data: RecentMilestone[];
@@ -32,55 +33,61 @@ export function MilestoneFactsHubView({
   const afrobeatsMilestones = data.filter((m) => m.isAfrobeats).length;
 
   return (
-    <div className="pb-16 max-w-3xl">
-      {/* Header */}
-      <div className="mb-6">
-        <div className="flex items-start justify-between gap-4">
-          <div>
-            <div className="flex items-center gap-2 mb-1">
-              <Zap className="w-5 h-5 text-primary" />
-              <h1 className="text-2xl font-bold tracking-tight text-foreground">
-                Milestone Facts
-              </h1>
+    <div className="grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_350px] 2xl:grid-cols-[minmax(0,1fr)_350px] gap-6 items-start">
+      <div className="pb-16 max-w-3xl">
+        {/* Header */}
+        <div className="mb-6">
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <div className="flex items-center gap-2 mb-1">
+                <Zap className="w-5 h-5 text-primary" />
+                <h1 className="text-2xl font-bold tracking-tight text-foreground">
+                  Milestone Facts
+                </h1>
+              </div>
+              <p className="text-sm text-muted-foreground">
+                Every artist and song that has crossed a major Spotify streaming
+                threshold — tracked and timestamped.
+              </p>
             </div>
-            <p className="text-sm text-muted-foreground">
-              Every artist and song that has crossed a major Spotify streaming
-              threshold — tracked and timestamped.
-            </p>
           </div>
         </div>
-      </div>
 
-      {/* Stat pills */}
-      <div className="flex items-stretch gap-3 mb-8 flex-wrap">
-        <StatPill
-          label="Total milestones"
-          value={meta.total.toLocaleString()}
+        {/* Stat pills */}
+        <div className="flex items-stretch gap-3 mb-8 flex-wrap">
+          <StatPill
+            label="Total milestones"
+            value={meta.total.toLocaleString()}
+          />
+          <StatPill label="On this page" value={data.length} />
+          <StatPill label="Artist milestones" value={artistMilestones} />
+          <StatPill label="Song milestones" value={songMilestones} />
+          {afrobeatsMilestones > 0 && (
+            <StatPill label="Afrobeats" value={afrobeatsMilestones} />
+          )}
+        </div>
+
+        {/* Filters */}
+        <MilestoneFactsFilters
+          currentIsAfrobeats={currentIsAfrobeats}
+          currentMetric={currentMetric}
         />
-        <StatPill label="On this page" value={data.length} />
-        <StatPill label="Artist milestones" value={artistMilestones} />
-        <StatPill label="Song milestones" value={songMilestones} />
-        {afrobeatsMilestones > 0 && (
-          <StatPill label="Afrobeats" value={afrobeatsMilestones} />
-        )}
+
+        {/* List */}
+        <MilestoneFactsList data={data} offset={(meta.page - 1) * meta.limit} />
+
+        {/* Pagination */}
+        <MilestoneFactsPagination
+          page={meta.page}
+          totalPages={meta.totalPages}
+          total={meta.total}
+          limit={meta.limit}
+        />
       </div>
-
-      {/* Filters */}
-      <MilestoneFactsFilters
-        currentIsAfrobeats={currentIsAfrobeats}
-        currentMetric={currentMetric}
-      />
-
-      {/* List */}
-      <MilestoneFactsList data={data} offset={(meta.page - 1) * meta.limit} />
-
-      {/* Pagination */}
-      <MilestoneFactsPagination
-        page={meta.page}
-        totalPages={meta.totalPages}
-        total={meta.total}
-        limit={meta.limit}
-      />
+      <div className="sticky top-6 flex flex-col gap-6">
+        <BannerAd />
+        <BannerAd />
+      </div>
     </div>
   );
 }

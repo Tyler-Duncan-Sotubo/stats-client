@@ -6,7 +6,6 @@ import { Toaster } from "sonner";
 import { Plus_Jakarta_Sans } from "next/font/google";
 import { ScrollToTop } from "@/shared/ui/scroll-to-top";
 import Script from "next/script";
-import { WfaRefresh } from "@/shared/ui/wfa-refresh";
 
 const plusJakarta = Plus_Jakarta_Sans({
   subsets: ["latin"],
@@ -32,20 +31,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <head>
-        <Script
-          src="https://weforads.com/tag/wfa_b522450cd4879b8eeb5001a004a7918c.js"
-          strategy="afterInteractive"
-          data-no-minify="1"
-          data-no-optimize="1"
-          data-cfasync="false"
-        />
-      </head>
       <body className={`${plusJakarta.variable} font-sans antialiased`}>
         <NextAuthProvider>
           <QueryProvider>
             <ScrollToTop />
-            <WfaRefresh />
             {/* Google Analytics — skip if loaded in iframe */}
             <Script
               src="https://www.googletagmanager.com/gtag/js?id=G-4YWCN1HRXE"
