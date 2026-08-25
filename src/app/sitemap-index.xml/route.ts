@@ -6,18 +6,15 @@ const BASE_URL = "https://tooxclusive.com/stats";
 const PAGE_SIZE = 5000;
 
 export async function GET() {
-  const [songsCount, artistsCount, albumsCount, milestonesCount] =
-    await Promise.all([
-      redis.get("public:songs:indexable:count"),
-      redis.get("public:artists:indexable:count"),
-      redis.get("public:albums:indexable:count"),
-      redis.get("public:milestones:facts:indexable:count"),
-    ]);
+  const [songsCount, artistsCount, albumsCount] = await Promise.all([
+    redis.get("public:songs:indexable:count"),
+    redis.get("public:artists:indexable:count"),
+    redis.get("public:albums:indexable:count"),
+  ]);
 
   const songPages = Math.ceil(Number(songsCount ?? 0) / PAGE_SIZE);
   const artistPages = Math.ceil(Number(artistsCount ?? 0) / PAGE_SIZE);
   const albumPages = Math.ceil(Number(albumsCount ?? 0) / PAGE_SIZE);
-  const milestonePages = Math.ceil(Number(milestonesCount ?? 0) / PAGE_SIZE);
 
   const now = new Date().toISOString();
 
@@ -36,7 +33,6 @@ export async function GET() {
 ${buildSitemaps("artists", artistPages)}
 ${buildSitemaps("songs", songPages)}
 ${buildSitemaps("albums", albumPages)}
-${buildSitemaps("milestones-facts", milestonePages)}
   <sitemap>
     <loc>${BASE_URL}/sitemaps/milestones</loc>
     <lastmod>${now}</lastmod>
@@ -47,10 +43,6 @@ ${buildSitemaps("milestones-facts", milestonePages)}
   </sitemap>
   <sitemap>
     <loc>${BASE_URL}/sitemaps/rankings</loc>
-    <lastmod>${now}</lastmod>
-  </sitemap>
-  <sitemap>
-    <loc>${BASE_URL}/sitemaps/milestones-facts-hub</loc>
     <lastmod>${now}</lastmod>
   </sitemap>
 </sitemapindex>`;
